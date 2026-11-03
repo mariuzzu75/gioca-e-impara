@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6c63d9">
+  <title>Imparo la matematica</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Torna alla home">
+      <img src="images/characters/gufo.svg" alt="" class="brand-mascot">
+      <span>Imparo la <b>matematica</b></span>
+    </a>
+    <div class="top-stats">
+      <span class="stat-pill">⭐ <b id="stars-total">0</b></span>
+      <span class="stat-pill">🏆 <b id="completed-total">0</b></span>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section id="home-screen" class="screen active">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">LA MIA AVVENTURA MATEMATICA</p>
+          <h1>Pronta a giocare<br><span>con i numeri?</span></h1>
+          <p class="hero-text">Esplora, conta, fai calcoli e conquista tante stelline!</p>
+          <button class="primary-btn" id="start-btn">Cominciamo! <span>➜</span></button>
+        </div>
+        <img class="hero-image" src="images/characters/gufo.svg" alt="Gufo mascotte con numeri e stelline">
+        <div class="hero-decoration decor-one">＋</div><div class="hero-decoration decor-two">★</div>
+      </div>
+
+      <div class="section-heading">
+        <div><p class="eyebrow">SCEGLI LA TUA AVVENTURA</p><h2>Che cosa vuoi imparare?</h2></div>
+        <span class="level-chip" id="current-level">Livello 1 · Principiante</span>
+      </div>
+      <div class="module-grid" id="module-grid"></div>
+      <div class="progress-panel">
+        <div class="progress-icon">🏅</div>
+        <div class="progress-info"><b>Il mio percorso</b><span id="progress-label">Hai appena iniziato: buon divertimento!</span><div class="progress-track"><div id="overall-progress"></div></div></div>
+        <strong id="progress-percent">0%</strong>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <div class="game-nav">
+        <button class="back-btn" id="back-btn">← Tutte le avventure</button>
+        <div class="game-meta"><span id="game-module-name">Conta e impara</span><span id="game-level">Livello 1</span></div>
+      </div>
+      <div class="game-card">
+        <div class="game-card-top">
+          <div class="round-label" id="round-label">SFIDA 1 DI 5</div>
+          <div class="round-progress"><div id="round-progress-fill"></div></div>
+          <div class="game-stars">⭐ <b id="game-stars">0</b></div>
+        </div>
+        <div class="question-area">
+          <img id="question-image" class="question-image" src="images/objects/stars.svg" alt="">
+          <p class="question-hint" id="question-hint">Osserva e scegli la risposta giusta!</p>
+          <div class="question" id="question">Quanto fa 2 + 3?</div>
+          <div class="visual-count" id="visual-count"></div>
+        </div>
+        <div class="answer-area" id="answer-area"></div>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+        <div class="game-actions">
+          <button class="sound-btn" id="read-question-btn">🔊 Ascolta</button>
+          <button class="primary-btn next-btn" id="next-btn" disabled>Avanti <span>➜</span></button>
+        </div>
+      </div>
+      <p class="encouragement">Ogni tentativo è un passo avanti. Sei bravissima! 🌈</p>
+    </section>
+
+    <section id="result-screen" class="screen">
+      <div class="result-card">
+        <img src="images/rewards/trophy.svg" alt="" class="trophy-image">
+        <p class="eyebrow">AVVENTURA COMPLETATA</p>
+        <h1 id="result-title">Bravissima!</h1>
+        <p id="result-message">Hai completato la tua sfida.</p>
+        <div class="result-score"><span>⭐</span><strong id="result-stars">5</strong><small>stelline conquistate</small></div>
+        <div class="result-buttons"><button class="secondary-btn" id="home-result-btn">Torna alla mappa</button><button class="primary-btn" id="again-btn">Gioca ancora ➜</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Un piccolo passo alla volta… la matematica è un'avventura! ✨</footer>
+  <script src="js/levels.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/sounds.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

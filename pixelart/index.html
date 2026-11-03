@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divertiti con Pixel Art </title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* COLONNA SINISTRA */
+
+.sidebar {
+  background: #f0f0f0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 2px solid #ccc;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+button {
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="color"],
+input[type="number"] {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+}
+
+/* AREA PRINCIPALE */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* PALETTE */
+
+.palette {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: #fafafa;
+  border-bottom: 2px solid #ccc;
+  flex: none;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #333;
+  cursor: pointer;
+  flex: none;
+}
+
+.selected {
+  outline: 2px solid black;
+}
+
+/* CONTENITORE GRIGLIA */
+
+.grid-container {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ETICHETTE SUPERIORI */
+
+.labels-top {
+  display: grid;
+  gap: 1px;
+  margin-left: 34px;
+  margin-bottom: 4px;
+  flex: none;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* CONTENITORE GRIGLIA E LETTERE */
+
+.grid-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  align-items: center;
+  overflow: auto;
+}
+
+/* LETTERE LATERALI */
+
+.labels-left {
+  display: grid;
+  grid-template-rows: repeat(16, 1fr);
+  gap: 1px;
+  width: 30px;
+  flex: none;
+  margin-right: 4px;
+  text-align: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* GRIGLIA */
+
+.grid {
+  display: grid;
+  gap: 1px;
+  flex: none;
+  align-content: start;
+}
+
+/* SINGOLO PIXEL */
+
+.pixel {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- COLONNA SINISTRA -->
+
+<div class="sidebar">
+
+  <h3>Strumenti</h3>
+
+  <label>Colore personalizzato:</label>
+  <input type="color" id="customColor">
+
+  <button id="addColor">Aggiungi colore</button>
+  <button id="removeColor">Rimuovi colore</button>
+
+  <button id="eraser">Gomma</button>
+  <button id="clearAll">Pulisci tutto</button>
+
+  <button id="export">Esporta PNG</button>
+
+  <button id="save">Salva JSON</button>
+  <button id="load">Carica JSON</button>
+  <input type="file" id="loadFile" accept=".json" style="display:none">
+
+  <button id="importPNG">Importa PNG</button>
+  <input type="file" id="pngFile" accept="image/png" style="display:none">
+
+  <h3>Dimensioni griglia</h3>
+
+  <label>Righe:</label>
+  <input type="number" id="rowsInput" min="1" value="16">
+
+  <label>Colonne:</label>
+  <input type="number" id="colsInput" min="1" value="15">
+
+  <button id="applySize">Applica dimensioni</button>
+
+</div>
+
+<!-- AREA PRINCIPALE -->
+
+<div class="main">
+
+  <!-- PALETTE -->
+
+  <div class="palette" id="palette"></div>
+
+  <!-- GRIGLIA -->
+
+  <div class="grid-container">
+
+    <div class="labels-top" id="colLabels"></div>
+
+    <div class="grid-wrapper">
+
+      <div class="labels-left" id="rowLabels"></div>
+
+      <div class="grid" id="grid"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+// ======================================
+// VARIABILI
+// ======================================
+
+let rows = 16;
+let cols = 15;
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const baseColors = [
+  "#000000", "#ffffff", "#ff0000", "#00ff00",
+  "#0000ff", "#ffff00", "#ff8800", "#ff00ff",
+  "#00ffff", "#8844ff", "#888888"
+];
+
+let colors = [...baseColors];
+let currentColor = colors[0];
+let mouseDown = false;
+
+const paletteEl = document.getElementById("palette");
+const gridEl = document.getElementById("grid");
+const colLabelsEl = document.getElementById("colLabels");
+const rowLabelsEl = document.getElementById("rowLabels");
+const wrapperEl = document.querySelector(".grid-wrapper");
+
+
+// ======================================
+// ADATTAMENTO AUTOMATICO DELLA GRIGLIA
+// ======================================
+
+function fitGrid() {
+
+  const availableWidth =
+    wrapperEl.clientWidth - 34;
+
+  const availableHeight =
+    wrapperEl.clientHeight;
+
+  if (availableWidth <= 0 || availableHeight <= 0) {
+    return;
+  }
+
+  // Considera anche gli spazi tra i quadratini
+  const gap = 1;
+
+  const cellWidth =
+    (availableWidth - (cols - 1) * gap) / cols;
+
+  const cellHeight =
+    (availableHeight - (rows - 1) * gap) / rows;
+
+  // Mantiene sempre i quadratini perfettamente quadrati
+  const cellSize = Math.min(cellWidth, cellHeight);
+
+  const gridWidth =
+    cols * cellSize + (cols - 1) * gap;
+
+  const gridHeight =
+    rows * cellSize + (rows - 1) * gap;
+
+  // Dimensioni della griglia
+  gridEl.style.width = gridWidth + "px";
+  gridEl.style.height = gridHeight + "px";
+
+  gridEl.style.gridTemplateColumns =
+    `repeat(${cols}, ${cellSize}px)`;
+
+  gridEl.style.gridTemplateRows =
+    `repeat(${rows}, ${cellSize}px)`;
+
+  // Allineamento etichette laterali
+  rowLabelsEl.style.height = gridHeight + "px";
+
+  rowLabelsEl.style.gridTemplateRows =
+    `repeat(${rows}, ${cellSize}px)`;
+
+  // Allineamento etichette superiori
+  colLabelsEl.style.width = gridWidth + "px";
+
+  colLabelsEl.style.gridTemplateColumns =
+    `repeat(${cols}, ${cellSize}px)`;
+}
+
+
+// Osserva automaticamente i cambiamenti
+// delle dimensioni della finestra
+
+const resizeObserver = new ResizeObserver(() => {
+  fitGrid();
+});
+
+resizeObserver.observe(wrapperEl);
+
+
+// ======================================
+// PALETTE COLORI
+// ======================================
+
+function renderPalette() {
+
+  paletteEl.innerHTML = "";
+
+  colors.forEach(color => {
+
+    const swatch = document.createElement("div");
+
+    swatch.className = "color-swatch";
+    swatch.style.backgroundColor = color;
+
+    swatch.addEventListener("click", () => {
+
+      currentColor = color;
+
+      document.querySelectorAll(".color-swatch")
+        .forEach(el => el.classList.remove("selected"));
+
+      swatch.classList.add("selected");
+
+    });
+
+    paletteEl.appendChild(swatch);
+
+  });
+
+  if (paletteEl.firstChild) {
+    paletteEl.firstChild.classList.add("selected");
+  }
+
+}
+
+
+// ======================================
+// ETICHETTE
+// ======================================
+
+function renderLabels() {
+
+  // NUMERI SUPERIORI
+
+  colLabelsEl.style.gridTemplateColumns =
+    `repeat(${cols}, 1fr)`;
+
+  colLabelsEl.innerHTML = "";
+
+  for (let c = 1; c <= cols; c++) {
+
+    const label = document.createElement("div");
+
+    label.textContent = c;
+
+    colLabelsEl.appendChild(label);
+
+  }
+
+  // LETTERE LATERALI
+
+  rowLabelsEl.style.gridTemplateRows =
+    `repeat(${rows}, 1fr)`;
+
+  rowLabelsEl.innerHTML = "";
+
+  for (let r = 0; r < rows; r++) {
+
+    const label = document.createElement("div");
+
+    label.textContent = letters[r] || r + 1;
+
+    rowLabelsEl.appendChild(label);
+
+  }
+
+}
+
+
+// ======================================
+// CREAZIONE GRIGLIA
+// ======================================
+
+function createGrid() {
+
+  gridEl.innerHTML = "";
+
+  for (let r = 0; r < rows; r++) {
+
+    for (let c = 0; c < cols; c++) {
+
+      const pixel = document.createElement("div");
+
+      pixel.className = "pixel";
+
+      // Disegna con il mouse
+
+      pixel.addEventListener("mousedown", () => {
+
+        pixel.style.backgroundColor = currentColor;
+
+      });
+
+      // Disegna trascinando il mouse
+
+      pixel.addEventListener("mouseover", () => {
+
+        if (mouseDown) {
+          pixel.style.backgroundColor = currentColor;
+        }
+
+      });
+
+      gridEl.appendChild(pixel);
+
+    }
+
+  }
+
+  fitGrid();
+
+}
+
+
+// ======================================
+// INIZIALIZZAZIONE
+// ======================================
+
+renderPalette();
+renderLabels();
+createGrid();
+
+
+// Gestione mouse
+
+document.body.addEventListener("mousedown", () => {
+  mouseDown = true;
+});
+
+document.body.addEventListener("mouseup", () => {
+  mouseDown = false;
+});
+
+document.body.addEventListener("mouseleave", () => {
+  mouseDown = false;
+});
+
+
+// ======================================
+// GOMMA
+// ======================================
+
+document.getElementById("eraser")
+.addEventListener("click", () => {
+
+  currentColor = "#ffffff";
+
+  document.querySelectorAll(".color-swatch")
+    .forEach(el => el.classList.remove("selected"));
+
+});
+
+
+// ======================================
+// AGGIUNGI COLORE
+// ======================================
+
+document.getElementById("addColor")
+.addEventListener("click", () => {
+
+  const newColor =
+    document.getElementById("customColor").value;
+
+  if (!colors.includes(newColor)) {
+    colors.push(newColor);
+  }
+
+  currentColor = newColor;
+
+  renderPalette();
+
+  const swatches =
+    document.querySelectorAll(".color-swatch");
+
+  swatches.forEach(el => {
+    el.classList.remove("selected");
+
+    if (el.style.backgroundColor ===
+        document.createElement("div").style.backgroundColor) {
+      // Nessuna operazione
+    }
+  });
+
+  const selected = [...swatches].find(el => {
+    const temp = document.createElement("div");
+    temp.style.backgroundColor = newColor;
+    return el.style.backgroundColor === temp.style.backgroundColor;
+  });
+
+  if (selected) selected.classList.add("selected");
+
+});
+
+
+// ======================================
+// RIMUOVI COLORE
+// ======================================
+
+document.getElementById("removeColor")
+.addEventListener("click", () => {
+
+  if (baseColors.includes(currentColor)) {
+
+    alert("Questo colore fa parte della palette base e non può essere eliminato.");
+
+    return;
+
+  }
+
+  colors = colors.filter(c => c !== currentColor);
+
+  currentColor = colors[0];
+
+  renderPalette();
+
+});
+
+
+// ======================================
+// PULISCI TUTTO
+// ======================================
+
+document.getElementById("clearAll")
+.addEventListener("click", () => {
+
+  document.querySelectorAll(".pixel")
+    .forEach(p => p.style.backgroundColor = "#ffffff");
+
+});
+
+
+// ======================================
+// ESPORTA PNG
+// ======================================
+
+document.getElementById("export")
+.addEventListener("click", () => {
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = cols * 20;
+  canvas.height = rows * 20;
+
+  const ctx = canvas.getContext("2d");
+
+  const pixels = document.querySelectorAll(".pixel");
+
+  let index = 0;
+
+  for (let r = 0; r < rows; r++) {
+
+    for (let c = 0; c < cols; c++) {
+
+      const color =
+        pixels[index].style.backgroundColor || "#ffffff";
+
+      ctx.fillStyle = color;
+
+      ctx.fillRect(c * 20, r * 20, 20, 20);
+
+      index++;
+
+    }
+
+  }
+
+  const link = document.createElement("a");
+
+  link.download = "pixel-art.png";
+  link.href = canvas.toDataURL();
+
+  link.click();
+
+});
+
+
+// ======================================
+// SALVA JSON
+// ======================================
+
+document.getElementById("save")
+.addEventListener("click", () => {
+
+  const pixels = [...document.querySelectorAll(".pixel")]
+    .map(p => p.style.backgroundColor);
+
+  const data = {
+    rows,
+    cols,
+    pixels
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data)],
+    { type: "application/json" }
+  );
+
+  const link = document.createElement("a");
+
+  link.download = "pixel-art.json";
+  link.href = URL.createObjectURL(blob);
+
+  link.click();
+
+  URL.revokeObjectURL(link.href);
+
+});
+
+
+// ======================================
+// CARICA JSON
+// ======================================
+
+document.getElementById("load")
+.addEventListener("click", () => {
+
+  document.getElementById("loadFile").click();
+
+});
+
+
+document.getElementById("loadFile")
+.addEventListener("change", e => {
+
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+
+    try {
+
+      const data = JSON.parse(reader.result);
+
+      if (!Number.isInteger(data.rows) ||
+          !Number.isInteger(data.cols) ||
+          !Array.isArray(data.pixels) ||
+          data.pixels.length !== data.rows * data.cols) {
+        throw new Error("File non valido");
+      }
+
+      rows = data.rows;
+      cols = data.cols;
+
+      document.getElementById("rowsInput").value = rows;
+      document.getElementById("colsInput").value = cols;
+
+      renderLabels();
+      createGrid();
+
+      const pixels = document.querySelectorAll(".pixel");
+
+      data.pixels.forEach((color, i) => {
+        pixels[i].style.backgroundColor = color || "#ffffff";
+      });
+
+    } catch (error) {
+
+      alert("Impossibile caricare il file JSON.");
+
+    }
+
+  };
+
+  reader.readAsText(file);
+
+  e.target.value = "";
+
+});
+
+
+// ======================================
+// IMPORTA PNG
+// ======================================
+
+document.getElementById("importPNG")
+.addEventListener("click", () => {
+
+  document.getElementById("pngFile").click();
+
+});
+
+
+document.getElementById("pngFile")
+.addEventListener("change", e => {
+
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const img = new Image();
+
+  img.onload = () => {
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = cols;
+    canvas.height = rows;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(img, 0, 0, cols, rows);
+
+    const pixels = document.querySelectorAll(".pixel");
+
+    let index = 0;
+
+    for (let r = 0; r < rows; r++) {
+
+      for (let c = 0; c < cols; c++) {
+
+        const data = ctx.getImageData(c, r, 1, 1).data;
+
+        const color =
+          `rgb(${data[0]},${data[1]},${data[2]})`;
+
+        pixels[index].style.backgroundColor = color;
+
+        index++;
+
+      }
+
+    }
+
+    URL.revokeObjectURL(img.src);
+
+  };
+
+  img.src = URL.createObjectURL(file);
+
+  e.target.value = "";
+
+});
+
+
+// ======================================
+// CAMBIO DIMENSIONI GRIGLIA
+// ======================================
+
+document.getElementById("applySize")
+.addEventListener("click", () => {
+
+  const newRows =
+    parseInt(document.getElementById("rowsInput").value);
+
+  const newCols =
+    parseInt(document.getElementById("colsInput").value);
+
+  if (!Number.isInteger(newRows) ||
+      !Number.isInteger(newCols) ||
+      newRows < 1 || newCols < 1 ||
+      newRows > 200 || newCols > 200) {
+
+    alert("Inserisci un numero di righe e colonne compreso tra 1 e 200.");
+
+    return;
+
+  }
+
+  rows = newRows;
+  cols = newCols;
+
+  renderLabels();
+  createGrid();
+
+});
+
+
+// ======================================
+// RIDIMENSIONAMENTO FINESTRA
+// ======================================
+
+window.addEventListener("resize", fitGrid);
+
+</script>
+
+</body>
+</html>
