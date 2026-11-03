@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Giochi educativi per bambini: Pixel Art, Inglese, Battaglia Navale e Matematica.">
+
+    <title>Gioca e Impara!</title>
+
+    <style>
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            color: #29314f;
+
+            background:
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,.45) 0 5%, transparent 6%),
+                radial-gradient(circle at 90% 15%, rgba(255,255,255,.35) 0 4%, transparent 5%),
+                linear-gradient(135deg, #8ce6ff 0%, #c8f7ff 45%, #fff3c4 100%);
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================
+           DECORAZIONI SFONDO
+        ========================================= */
+
+        .background-decoration {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.25);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bubble:nth-child(1) {
+            width: 110px;
+            height: 110px;
+            top: 12%;
+            left: 4%;
+        }
+
+        .bubble:nth-child(2) {
+            width: 70px;
+            height: 70px;
+            top: 65%;
+            right: 8%;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 5%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+
+        /* =========================================
+           CONTENITORE
+        ========================================= */
+
+        .container {
+            position: relative;
+            z-index: 1;
+
+            width: min(1200px, 92%);
+            margin: 0 auto;
+
+            padding: 55px 0 40px;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .logo {
+            font-size: clamp(2.7rem, 7vw, 5rem);
+            line-height: 1;
+            font-weight: 900;
+
+            color: #ffffff;
+
+            text-shadow:
+                0 4px 0 #6547c5,
+                0 7px 15px rgba(0,0,0,.15);
+
+            animation: logoEntrance .7s ease-out;
+        }
+
+        .logo span {
+            display: inline-block;
+        }
+
+        .subtitle {
+            display: inline-block;
+
+            margin-top: 22px;
+            padding: 12px 25px;
+
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            font-weight: 700;
+
+            color: #455070;
+
+            background: rgba(255,255,255,.75);
+
+            border-radius: 999px;
+
+            box-shadow:
+                0 6px 20px rgba(62,77,133,.12);
+        }
+
+        @keyframes logoEntrance {
+
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+
+        /* =========================================
+           GRIGLIA APP
+        ========================================= */
+
+        .apps-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 28px;
+        }
+
+
+        /* =========================================
+           CARD
+        ========================================= */
+
+        .app-card {
+            position: relative;
+
+            min-height: 310px;
+
+            padding: 30px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            border-radius: 32px;
+
+            box-shadow:
+                0 15px 30px rgba(44,55,100,.15),
+                inset 0 2px 0 rgba(255,255,255,.5);
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease;
+
+            overflow: hidden;
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px) scale(1.02);
+
+            box-shadow:
+                0 22px 40px rgba(44,55,100,.22);
+        }
+
+
+        /* Colori delle card */
+
+        .pixel {
+            background:
+                linear-gradient(145deg, #ff75b5, #ba73ff);
+        }
+
+        .english {
+            background:
+                linear-gradient(145deg, #60d5ff, #4e8cff);
+        }
+
+        .navale {
+            background:
+                linear-gradient(145deg, #47dfc0, #20a9c8);
+        }
+
+        .math {
+            background:
+                linear-gradient(145deg, #ffd65c, #ff9b55);
+        }
+
+
+        /* Cerchio icona */
+
+        .icon {
+            width: 115px;
+            height: 115px;
+
+            margin-bottom: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 4.2rem;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,.9);
+
+            box-shadow:
+                0 10px 20px rgba(0,0,0,.12);
+
+            transition: transform .3s ease;
+        }
+
+        .app-card:hover .icon {
+            transform: scale(1.1) rotate(-4deg);
+        }
+
+
+        /* =========================================
+           TESTI CARD
+        ========================================= */
+
+        .app-card h2 {
+            margin-bottom: 8px;
+
+            font-size: clamp(1.6rem, 3vw, 2.15rem);
+
+            color: #ffffff;
+
+            text-shadow:
+                0 2px 3px rgba(0,0,0,.16);
+        }
+
+        .app-card p {
+            max-width: 450px;
+
+            min-height: 50px;
+
+            margin-bottom: 22px;
+
+            color: rgba(255,255,255,.95);
+
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+
+        /* =========================================
+           PULSANTI
+        ========================================= */
+
+        .play-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 13px 27px;
+
+            color: #3e4361;
+
+            background: #ffffff;
+
+            border: 0;
+            border-radius: 999px;
+
+            text-decoration: none;
+
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 900;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 6px 0 rgba(75,66,119,.2);
+
+            transition:
+                transform .15s ease,
+                box-shadow .15s ease;
+        }
+
+        .play-button:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 9px 0 rgba(75,66,119,.18);
+        }
+
+        .play-button:active {
+            transform: translateY(3px);
+
+            box-shadow:
+                0 2px 0 rgba(75,66,119,.2);
+        }
+
+        .arrow {
+            transition: transform .2s ease;
+        }
+
+        .play-button:hover .arrow {
+            transform: translateX(4px);
+        }
+
+
+        /* =========================================
+           ELEMENTI DECORATIVI NELLE CARD
+        ========================================= */
+
+        .card-decoration {
+            position: absolute;
+
+            font-size: 1.5rem;
+
+            opacity: .28;
+
+            pointer-events: none;
+        }
+
+        .dec-1 {
+            top: 20px;
+            left: 22px;
+            transform: rotate(-15deg);
+        }
+
+        .dec-2 {
+            top: 25px;
+            right: 25px;
+            transform: rotate(15deg);
+        }
+
+        .dec-3 {
+            bottom: 20px;
+            left: 25px;
+        }
+
+        .dec-4 {
+            bottom: 25px;
+            right: 22px;
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        footer {
+            text-align: center;
+
+            margin-top: 45px;
+
+            color: #515b7a;
+        }
+
+        .footer-message {
+            display: inline-block;
+
+            padding: 13px 24px;
+
+            background: rgba(255,255,255,.65);
+
+            border-radius: 999px;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 5px 18px rgba(44,55,100,.1);
+        }
+
+        .star {
+            display: inline-block;
+            animation: star 1.5s ease-in-out infinite;
+        }
+
+        @keyframes star {
+
+            0%, 100% {
+                transform: scale(1) rotate(0);
+            }
+
+            50% {
+                transform: scale(1.3) rotate(15deg);
+            }
+        }
+
+
+        /* =========================================
+           RESPONSIVE TABLET
+        ========================================= */
+
+        @media (max-width: 800px) {
+
+            .container {
+                padding-top: 35px;
+            }
+
+            .apps-grid {
+                gap: 20px;
+            }
+
+            .app-card {
+                min-height: 290px;
+                padding: 25px 15px;
+            }
+
+            .icon {
+                width: 100px;
+                height: 100px;
+                font-size: 3.6rem;
+            }
+        }
+
+
+        /* =========================================
+           RESPONSIVE SMARTPHONE
+        ========================================= */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 90%;
+            }
+
+            header {
+                margin-bottom: 30px;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .app-card {
+                min-height: 270px;
+            }
+
+            .subtitle {
+                border-radius: 20px;
+            }
+        }
+
+
+        /* Accessibilità:
+           niente animazioni per chi le disabilita
+        */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- Decorazioni sfondo -->
+<div class="background-decoration">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+
+<main class="container">
+
+
+    <!-- =========================================
+         TITOLO
+    ========================================== -->
+
+    <header>
+
+        <h1 class="logo">
+            <span>🌈</span>
+            Gioca e Impara!
+            <span>🎈</span>
+        </h1>
+
+        <div class="subtitle">
+            Scegli un gioco e inizia l'avventura! 🚀
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+         APPLICAZIONI
+    ========================================== -->
+
+    <section class="apps-grid"
+             aria-label="Giochi disponibili">
+
+
+        <!-- PIXEL ART -->
+
+        <article class="app-card pixel">
+
+            <span class="card-decoration dec-1">⭐</span>
+            <span class="card-decoration dec-2">🎨</span>
+            <span class="card-decoration dec-3">🟪</span>
+            <span class="card-decoration dec-4">🟨</span>
+
+            <div class="icon">
+                🎨
+            </div>
+
+            <h2>Pixel Art</h2>
+
+            <p>
+                Disegna, colora e crea fantastiche
+                immagini usando i pixel!
+            </p>
+
+            <a
+                class="play-button"
+                href="https://pixelart.mariuzzu75.workers.dev/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                GIOCA
+
+                <span class="arrow">▶</span>
+
+            </a>
+
+        </article>
+
+
+
+        <!-- ENGLISH ADVENTURE -->
+
+        <article class="app-card english">
+
+            <span class="card-decoration dec-1">ABC</span>
+            <span class="card-decoration dec-2">⭐</span>
+            <span class="card-decoration dec-3">English</span>
+            <span class="card-decoration dec-4">💬</span>
+
+            <div class="icon">
+                EN
+            </div>
+
+            <h2>English Adventure</h2>
+
+            <p>
+                Impara nuove parole in inglese
+                giocando e divertendoti!
+            </p>
+
+            <a
+                class="play-button"
+                href="https://inglese-bambini.mariuzzu75.workers.dev/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                GIOCA
+
+                <span class="arrow">▶</span>
+
+            </a>
+
+        </article>
+
+
+
+        <!-- BATTAGLIA NAVALE -->
+
+        <article class="app-card navale">
+
+            <span class="card-decoration dec-1">⚓</span>
+            <span class="card-decoration dec-2">🌊</span>
+            <span class="card-decoration dec-3">💥</span>
+            <span class="card-decoration dec-4">🎯</span>
+
+            <div class="icon">
+                🚢
+            </div>
+
+            <h2>Battaglia Navale</h2>
+
+            <p>
+                Posiziona la flotta, scegli
+                le coordinate e... fuoco!
+            </p>
+
+            <a
+                class="play-button"
+                href="https://battaglia-navale.mariuzzu75.workers.dev/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                GIOCA
+
+                <span class="arrow">▶</span>
+
+            </a>
+
+        </article>
+
+
+
+        <!-- MATEMATICA -->
+
+        <article class="app-card math">
+
+            <span class="card-decoration dec-1">➕</span>
+            <span class="card-decoration dec-2">✖️</span>
+            <span class="card-decoration dec-3">➗</span>
+            <span class="card-decoration dec-4">⭐</span>
+
+            <div class="icon">
+                🔢
+            </div>
+
+            <h2>Imparo la Matematica</h2>
+
+            <p>
+                Allenati con numeri e calcoli
+                e diventa un campione di matematica!
+            </p>
+
+            <a
+                class="play-button"
+                href="https://impara-matematica.mariuzzu75.workers.dev/"
+                target="_blank"
+                rel="noopener noreferrer">
+
+                GIOCA
+
+                <span class="arrow">▶</span>
+
+            </a>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer>
+
+        <div class="footer-message">
+
+            <span class="star">⭐</span>
+
+            Imparare è più divertente quando si gioca!
+
+            <span class="star">⭐</span>
+
+        </div>
+
+    </footer>
+
+
+</main>
+
+
+
+<script>
+
+    /* ============================================
+       Piccolo effetto click sui pulsanti
+    ============================================ */
+
+    const buttons =
+        document.querySelectorAll(".play-button");
+
+
+    buttons.forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const card =
+                this.closest(".app-card");
+
+
+            /*
+             * Effetto di conferma visiva.
+             * L'apertura del link continua
+             * normalmente.
+             */
+
+            card.style.transform =
+                "scale(0.97)";
+
+
+            setTimeout(() => {
+
+                card.style.transform = "";
+
+            }, 180);
+
+        });
+
+    });
+
+
+
+    /* ============================================
+       Entrata progressiva delle card
+    ============================================ */
+
+    const cards =
+        document.querySelectorAll(".app-card");
+
+
+    cards.forEach((card, index) => {
+
+        card.style.opacity = "0";
+
+        card.style.transform =
+            "translateY(30px)";
+
+
+        setTimeout(() => {
+
+            card.style.transition =
+                "opacity .55s ease, " +
+                "transform .55s ease, " +
+                "box-shadow .25s ease";
+
+
+            card.style.opacity = "1";
+
+            card.style.transform =
+                "translateY(0)";
+
+        }, 150 + (index * 130));
+
+    });
+
+
+</script>
+
+
+</body>
+</html>
