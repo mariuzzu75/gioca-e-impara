@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>La fabbrica dei numeri primi</title>
+<style>
+:root{--p:#563de8;--txt:#17243b;--cell:34px}*{box-sizing:border-box}body{margin:0;padding:24px;font-family:Arial,sans-serif;color:var(--txt);background:linear-gradient(135deg,#f2f5ff,#fffdf2);min-height:100vh}.app{max-width:1050px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:clamp(30px,5vw,52px);margin:5px 0}.tag{color:var(--p);font-weight:800;font-size:13px;letter-spacing:2px}.sub{color:#64748b}.score,.card{background:#fff;border-radius:22px;box-shadow:0 12px 35px #4f46e51a}.score{padding:14px 18px;font-weight:800}.controls{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:end;padding:20px;margin:24px 0}label{display:block;font-size:13px;font-weight:800;margin-bottom:7px}input[type=number]{width:100%;height:48px;padding:0 14px;border:2px solid #dddffd;border-radius:14px;font-size:20px;font-weight:800;background:#f7f8ff}.btn{border:0;border-radius:14px;padding:14px 20px;font-weight:800;cursor:pointer}.primary{background:var(--p);color:#fff}.secondary{background:#fff;border:2px solid #e5e7eb}.prime{background:#f7b91c;color:#332400}.layout{display:grid;grid-template-columns:1fr 260px;gap:20px}.game{padding:22px}.top{display:flex;justify-content:space-between;align-items:center}.chosen{font-size:42px;font-weight:900;color:var(--p)}.calc{font-weight:900;background:#d8fae8;color:#08714e;padding:11px 15px;border-radius:14px}.calc.bad{background:#fff1bd;color:#875800}.msg{margin:16px 0;padding:15px;border-radius:15px;background:#f1f5f9;font-weight:800;line-height:1.4}.msg.ok{background:#d6f8e6;color:#076244}.msg.warn{background:#fff1bd;color:#805400}.msg.err{background:#ffe1e1;color:#9a2727}.viewport{overflow:auto;min-height:180px;background:#f1f5f9;border-radius:20px;padding:28px}.center{width:max-content;min-width:100%;display:flex;justify-content:center;padding:5px 20px 25px}.grid{position:relative;display:grid;gap:4px;padding:9px;background:#e1e5ff;border:4px solid #a5adff;border-radius:16px;width:max-content;touch-action:none}.grid.good{background:#d6f8e9;border-color:#62d3a7}.grid.bad{background:#fff2c3;border-color:#efc35e}.cell,.empty{width:var(--cell);height:var(--cell);border-radius:8px}.cell{background:#ef7478;border:2px solid #fff9;box-shadow:0 2px 5px #0002}.empty{border:2px dashed #a86c0066;background:#fff7}.handle{position:absolute;right:-17px;bottom:-17px;width:36px;height:36px;border:0;border-radius:11px;background:var(--p);color:#fff;box-shadow:0 0 0 4px #fff;cursor:ew-resize;touch-action:none;font-weight:900}.slider{width:100%;accent-color:var(--p)}.hint{text-align:center;color:#64748b;font-size:13px;margin:18px 0 7px}.actions{display:flex;justify-content:center;gap:10px;margin-top:18px;flex-wrap:wrap}.side{padding:20px;margin-bottom:18px}.side h2{margin-top:0}.side ol{padding-left:20px;color:#566277;font-size:14px;line-height:1.55}.discoveries{background:linear-gradient(145deg,#563de8,#3927b3);color:#fff}.badges{display:flex;flex-wrap:wrap;gap:8px}.badge{padding:8px 10px;background:#ffffff22;border-radius:10px;font-weight:800}#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}.conf{position:absolute;top:-20px;width:10px;height:16px;animation:fall 3s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}@media(max-width:800px){.layout{grid-template-columns:1fr}.controls{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}@media(max-width:550px){body{padding:12px}.game{padding:15px}.viewport{padding:20px 4px}:root{--cell:30px}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div id="confetti"></div>
+<div class="app">
+<header><div><div class="tag">IMPARA GIOCANDO</div><h1>La fabbrica dei numeri primi</h1><div class="sub">Costruisci rettangoli usando sempre tutti i quadratini.</div></div><div class="score">🏆 Punti: <span id="score">0</span></div></header>
+
+<div class="card controls">
+    <div>
+        <label for="number">Numero di quadratini, da 5 a 100</label>
+        <input id="number" type="number" min="5" max="100" value="12">
+    </div>
+    <button class="btn primary" id="start">Avvia la sfida</button>
+    <button class="btn secondary" id="random">✨ Numero casuale</button>
+</div>
+
+<div class="layout">
+<section class="card game">
+    <div class="top">
+        <div>
+            <div class="sub">Numero scelto</div>
+            <div class="chosen" id="chosen">12</div>
+        </div>
+        <div class="calc" id="calc"></div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <div class="viewport">
+        <div class="center">
+            <div class="grid" id="grid">
+                <button class="handle" id="handle">↔</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hint">Trascina la maniglia ↔ oppure usa il cursore.</div>
+
+    <input class="slider" id="slider" type="range" min="1" max="12" value="1">
+
+    <div class="actions">
+        <button class="btn prime" id="prime">⭐ Secondo me è primo!</button>
+        <button class="btn secondary" id="restart">🔄 Ricomincia</button>
+
+        <!-- NUOVO PULSANTE -->
+        <button class="btn primary" id="confirmRect" style="display:none;">
+            🎯 Confermo il rettangolo!
+        </button>
+    </div>
+</section>
+
+<aside>
+    <div class="card side">
+        <h2>Come si gioca</h2>
+        <ol>
+            <li>Scegli un numero.</li>
+            <li>Cambia la base del rettangolo.</li>
+            <li>Cerca di usare tutti i quadratini senza spazi vuoti.</li>
+            <li>Se trovi un rettangolo con entrambi i lati maggiori di 1, il numero non è primo.</li>
+            <li>Se pensi che non esista, dichiaralo primo.</li>
+        </ol>
+    </div>
+
+    <div class="card side discoveries">
+        <h2>🏆 Scoperte</h2>
+        <p id="none">Ancora nessuna scoperta.</p>
+        <div class="badges" id="badges"></div>
+    </div>
+</aside>
+</div>
+</div>
+
+<script>
+'use strict';
+
+let total=12,cols=1,points=0,drag=false,startX=0,startCols=1;
+const found=new Set();
+const $=id=>document.getElementById(id);
+
+const num=$('number'),chosen=$('chosen'),grid=$('grid'),handle=$('handle'),
+      slider=$('slider'),calc=$('calc'),msg=$('msg');
+
+function prime(n){if(n<2)return false;for(let d=2;d*d<=n;d++)if(n%d===0)return false;return true}
+function divisor(n){for(let d=2;d*d<=n;d++)if(n%d===0)return d;return null}
+
+function message(t,c=''){msg.textContent=t;msg.className='msg'+(c?' '+c:'')}
+
+function render(){
+    grid.querySelectorAll('.cell,.empty').forEach(e=>e.remove());
+    const rows=Math.ceil(total/cols),capacity=rows*cols,empty=capacity-total;
+    const exact=empty===0;
+    const composite=exact&&cols>1&&cols<total;
+
+    grid.style.gridTemplateColumns=`repeat(${cols},var(--cell))`;
+    grid.classList.toggle('good',composite);
+    grid.classList.toggle('bad',!exact);
+
+    for(let i=0;i<total;i++){
+        let e=document.createElement('div');
+        e.className='cell';
+        grid.insertBefore(e,handle);
+    }
+    for(let i=0;i<empty;i++){
+        let e=document.createElement('div');
+        e.className='empty';
+        grid.insertBefore(e,handle);
+    }
+
+    calc.textContent=`${cols} × ${rows} = ${capacity}${exact?' ✓':''}`;
+    calc.className='calc'+(!exact?' bad':'');
+}
+
+function start(v=num.value){
+    let n=parseInt(v,10);
+    if(Number.isNaN(n))n=5;
+    n=Math.max(5,Math.min(100,n));
+
+    total=n; cols=1;
+    num.value=n;
+    chosen.textContent=n;
+    slider.max=n;
+    slider.value=1;
+
+    $('confirmRect').style.display='none';
+    message(`Disponi tutti i ${n} quadratini in un rettangolo.`);
+    render();
+}
+
+function choose(v){
+    cols=Math.max(1,Math.min(total,Math.round(Number(v))));
+    slider.value=cols;
+    render();
+    check();
+}
+
+function check(){
+    const rows=Math.ceil(total/cols);
+    const cap=rows*cols;
+    const empty=cap-total;
+
+    $('confirmRect').style.display='none';
+
+    if(cols===1 || cols===total){
+        message(`${cols} × ${rows} = ${total}. Questo è il rettangolo lungo: prova a trovarne un altro.`);
+        return;
+    }
+
+    if(empty){
+        message(`${cols} × ${rows} = ${cap}: rimangono ${empty} ${empty===1?'spazio vuoto':'spazi vuoti'}.`,'warn');
+        return;
+    }
+
+    message(`Hai formato ${cols} × ${rows}. Premi il pulsante per confermare!`,'ok');
+    $('confirmRect').style.display='inline-block';
+
+    window._lastRect={cols,rows};
+}
+
+function declarePrime(){
+    if(prime(total))
+        complete(true,`⭐ Esatto! ${total} è primo: i suoi unici divisori sono 1 e ${total}.`);
+    else
+        message(`🤔 ${total} non è primo. Suggerimento: prova una base di ${divisor(total)}.`,'err');
+}
+
+function complete(isPrime,text){
+    message(text,'ok');
+
+    if(!found.has(total)){
+        found.add(total);
+        points++;
+        $('score').textContent=points;
+        $('none').style.display='none';
+
+        const b=document.createElement('span');
+        b.className='badge';
+        b.textContent=`${total} ${isPrime?'⭐':'▦'}`;
+        $('badges').appendChild(b);
+    }
+
+    confetti();
+}
+
+function confetti(){
+    const colors=['#563de8','#60a5fa','#34d399','#fbbf24','#fb7185'];
+    for(let i=0;i<45;i++){
+        const c=document.createElement('i');
+        c.className='conf';
+        c.style.left=Math.random()*100+'%';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDuration=2+Math.random()*2+'s';
+        $('confetti').appendChild(c);
+        setTimeout(()=>c.remove(),4200);
+    }
+}
+
+$('start').onclick=()=>start();
+$('random').onclick=()=>start(Math.floor(Math.random()*96)+5);
+$('restart').onclick=()=>start(total);
+$('prime').onclick=declarePrime;
+
+$('confirmRect').onclick=()=>{
+    const r=window._lastRect;
+    if(!r)return;
+    complete(false,`🎉 Hai confermato ${r.cols} × ${r.rows}! ${total} NON è primo!`);
+    $('confirmRect').style.display='none';
+};
+
+slider.oninput=e=>choose(e.target.value);
+
+num.onkeydown=e=>{if(e.key==='Enter')start()};
+
+handle.onpointerdown=e=>{
+    e.preventDefault();
+    drag=true;
+    startX=e.clientX;
+    startCols=cols;
+    handle.setPointerCapture?.(e.pointerId);
+};
+
+window.onpointermove=e=>{
+    if(!drag)return;
+    e.preventDefault();
+    choose(startCols+Math.round((e.clientX-startX)/38));
+};
+
+window.onpointerup=()=>drag=false;
+window.onpointercancel=()=>drag=false;
+
+start(12);
+</script>
+</body>
+</html>
