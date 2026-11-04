@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Forma la Parola: gioco educativo per imparare a leggere e comporre parole divertendosi.">
+    <title>Forma la Parola</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ink: #29314f;
+            --purple: #7657dc;
+            --purple-dark: #5940ba;
+            --yellow: #ffd85c;
+            --green: #40c990;
+            --red: #ff667a;
+            --white: #ffffff;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 10% 15%, rgba(255,255,255,.55) 0 4%, transparent 5%),
+                radial-gradient(circle at 90% 20%, rgba(255,255,255,.45) 0 5%, transparent 6%),
+                linear-gradient(135deg, #9cecff 0%, #d4f9ff 45%, #fff1ba 100%);
+        }
+
+        button,
+        select,
+        a {
+            font: inherit;
+        }
+
+        button,
+        select {
+            touch-action: manipulation;
+        }
+
+        button:focus-visible,
+        select:focus-visible,
+        a:focus-visible {
+            outline: 4px solid #29314f;
+            outline-offset: 3px;
+        }
+
+        .background-decoration {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.28);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bubble:nth-child(1) { width: 120px; height: 120px; top: 8%; left: 3%; }
+        .bubble:nth-child(2) { width: 80px; height: 80px; top: 65%; right: 5%; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 160px; height: 160px; bottom: 2%; left: 12%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .home-button {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 20;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            color: #3e4361;
+            background: rgba(255,255,255,.94);
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 900;
+            box-shadow: 0 7px 18px rgba(44,55,100,.18);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(44,55,100,.25);
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 1;
+            width: min(980px, 94%);
+            margin: 0 auto;
+            padding: 65px 0 35px;
+        }
+
+        header {
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: clamp(2.4rem, 7vw, 4.8rem);
+            line-height: 1.05;
+            text-shadow: 0 4px 0 var(--purple-dark), 0 8px 18px rgba(0,0,0,.16);
+        }
+
+        .subtitle {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 22px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.8);
+            font-size: clamp(.95rem, 2.2vw, 1.2rem);
+            font-weight: 800;
+            box-shadow: 0 5px 16px rgba(44,55,100,.1);
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .tool-box {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.82);
+            font-weight: 900;
+            box-shadow: 0 6px 18px rgba(44,55,100,.11);
+        }
+
+        .tool-box label {
+            white-space: nowrap;
+        }
+
+        select {
+            max-width: 150px;
+            padding: 8px 10px;
+            color: var(--ink);
+            background: #fff;
+            border: 2px solid #cbc1ff;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .game-card {
+            position: relative;
+            overflow: hidden;
+            padding: clamp(20px, 4vw, 38px);
+            border: 4px solid rgba(255,255,255,.75);
+            border-radius: 36px;
+            background: linear-gradient(145deg, #b07cff, #725add);
+            text-align: center;
+            box-shadow: 0 18px 38px rgba(63,51,130,.25), inset 0 2px 0 rgba(255,255,255,.45);
+        }
+
+        .progress-track {
+            height: 15px;
+            overflow: hidden;
+            margin-bottom: 22px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.35);
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ffe76b, #ffad57);
+            transition: width .35s ease;
+        }
+
+        .picture {
+            min-height: 125px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(5rem, 14vw, 8rem);
+            filter: drop-shadow(0 8px 6px rgba(36,26,94,.22));
+            animation: pictureIn .42s ease;
+        }
+
+        @keyframes pictureIn {
+            from { opacity: 0; transform: scale(.65) rotate(-8deg); }
+            to { opacity: 1; transform: scale(1) rotate(0); }
+        }
+
+        .hint {
+            min-height: 28px;
+            margin: 7px 0 16px;
+            color: rgba(255,255,255,.96);
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .answer-area {
+            min-height: 78px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .answer-slot {
+            width: clamp(42px, 7vw, 60px);
+            height: clamp(52px, 8vw, 67px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink);
+            background: rgba(255,255,255,.96);
+            border: 3px solid rgba(255,255,255,.7);
+            border-radius: 15px;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 900;
+            box-shadow: 0 6px 0 rgba(65,48,139,.25);
+            cursor: pointer;
+            transition: transform .15s ease;
+        }
+
+        .answer-slot.filled:hover {
+            transform: translateY(-3px);
+        }
+
+        .letters-area {
+            min-height: 75px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .letter-button {
+            width: clamp(50px, 8vw, 68px);
+            height: clamp(55px, 9vw, 72px);
+            border: 0;
+            border-radius: 17px;
+            color: #4c3c8f;
+            background: linear-gradient(180deg, #fffbe3, #ffdf70);
+            font-size: clamp(1.65rem, 4vw, 2.25rem);
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 7px 0 #d3973f, 0 11px 18px rgba(44,33,105,.2);
+            transition: transform .12s ease, box-shadow .12s ease, opacity .2s ease;
+        }
+
+        .letter-button:hover:not(:disabled) {
+            transform: translateY(-4px) rotate(-2deg);
+            box-shadow: 0 10px 0 #d3973f, 0 14px 20px rgba(44,33,105,.22);
+        }
+
+        .letter-button:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #d3973f;
+        }
+
+        .letter-button:disabled {
+            opacity: .18;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .message {
+            min-height: 42px;
+            margin: 24px 0 15px;
+            color: #fff;
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            font-weight: 900;
+            text-shadow: 0 2px 3px rgba(0,0,0,.16);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .control-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-width: 135px;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 999px;
+            color: #3e4361;
+            background: #fff;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(58,43,128,.3);
+            transition: transform .14s ease, box-shadow .14s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 rgba(58,43,128,.25);
+        }
+
+        .control-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(58,43,128,.28);
+        }
+
+        .control-button.primary {
+            color: #fff;
+            background: var(--green);
+        }
+
+        .control-button.next {
+            display: none;
+            color: #fff;
+            background: #ff815c;
+        }
+
+        .game-card.success {
+            animation: successPulse .55s ease;
+        }
+
+        .game-card.error {
+            animation: shake .38s ease;
+        }
+
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.025); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .stars {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .flying-star {
+            position: absolute;
+            left: 50%;
+            top: 45%;
+            font-size: 2.2rem;
+            animation: starBurst .9s ease-out forwards;
+        }
+
+        @keyframes starBurst {
+            from { opacity: 1; transform: translate(-50%, -50%) scale(.4); }
+            to { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.5) rotate(180deg); }
+        }
+
+        footer {
+            margin-top: 18px;
+            text-align: center;
+            color: #505a79;
+            font-weight: 800;
+        }
+
+        @media (max-width: 700px) {
+            .game-container { padding-top: 82px; }
+            .toolbar { grid-template-columns: 1fr; }
+            .tool-box { min-height: 56px; }
+            .home-button { top: 12px; left: 12px; }
+            .game-card { border-radius: 25px; }
+        }
+
+        @media (max-width: 420px) {
+            .answer-slot { width: 38px; height: 49px; border-radius: 11px; }
+            .letter-button { width: 47px; height: 54px; border-radius: 13px; }
+            .control-button { min-width: 120px; padding: 11px 14px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-decoration" aria-hidden="true">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <a href="../index.html" class="home-button" title="Torna alla Home">🏠 Home</a>
+
+    <main class="game-container">
+        <header>
+            <h1>🔤 Forma la Parola</h1>
+            <p class="subtitle">Guarda la figura e metti le lettere nell'ordine giusto!</p>
+        </header>
+
+        <section class="toolbar" aria-label="Impostazioni e punteggio">
+            <div class="tool-box">
+                <label for="category">📚 Categoria</label>
+                <select id="category">
+                    <option value="tutte">Tutte</option>
+                    <option value="animali">Animali</option>
+                    <option value="cibo">Cibo</option>
+                    <option value="trasporti">Trasporti</option>
+                    <option value="natura">Natura</option>
+                    <option value="scuola">Scuola</option>
+                    <option value="casa">Casa</option>
+                </select>
+            </div>
+
+            <div class="tool-box" aria-live="polite">⭐ Punti: <span id="score">0</span></div>
+            <div class="tool-box" aria-live="polite">🏆 Parole: <span id="completed">0</span></div>
+        </section>
+
+        <section class="game-card" id="gameCard" aria-label="Gioco Forma la Parola">
+            <div class="progress-track" aria-hidden="true">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="picture" id="picture" aria-hidden="true"></div>
+            <div class="hint" id="hint"></div>
+
+            <div class="answer-area" id="answerArea" aria-label="Parola da comporre"></div>
+            <div class="letters-area" id="lettersArea" aria-label="Lettere disponibili"></div>
+
+            <div class="message" id="message" aria-live="assertive">Scegli le lettere!</div>
+
+            <div class="controls">
+                <button class="control-button" id="undoButton" type="button">↩️ Annulla</button>
+                <button class="control-button" id="speakButton" type="button">🔊 Ascolta</button>
+                <button class="control-button primary" id="checkButton" type="button">✅ Controlla</button>
+                <button class="control-button next" id="nextButton" type="button">Prossima ➜</button>
+            </div>
+
+            <div class="stars" id="stars" aria-hidden="true"></div>
+        </section>
+
+        <footer>⭐ Impara nuove parole giocando! ⭐</footer>
+    </main>
+
+    <script>
+        const words = [
+            { word: "CANE", emoji: "🐶", category: "animali", hint: "È il migliore amico dell'uomo" },
+            { word: "GATTO", emoji: "🐱", category: "animali", hint: "Fa miao e ama fare le fusa" },
+            { word: "LEONE", emoji: "🦁", category: "animali", hint: "È chiamato il re della savana" },
+            { word: "PANDA", emoji: "🐼", category: "animali", hint: "È bianco e nero e mangia bambù" },
+            { word: "RANA", emoji: "🐸", category: "animali", hint: "Salta e vive vicino all'acqua" },
+            { word: "TIGRE", emoji: "🐯", category: "animali", hint: "Ha il pelo a strisce" },
+            { word: "MELA", emoji: "🍎", category: "cibo", hint: "È un frutto rosso, verde o giallo" },
+            { word: "PIZZA", emoji: "🍕", category: "cibo", hint: "È rotonda e si taglia a fette" },
+            { word: "BANANA", emoji: "🍌", category: "cibo", hint: "È un frutto lungo e giallo" },
+            { word: "PANE", emoji: "🍞", category: "cibo", hint: "Si prepara con farina, acqua e lievito" },
+            { word: "CAROTA", emoji: "🥕", category: "cibo", hint: "È una verdura arancione" },
+            { word: "TRENO", emoji: "🚂", category: "trasporti", hint: "Viaggia sui binari" },
+            { word: "AUTO", emoji: "🚗", category: "trasporti", hint: "Ha quattro ruote e viaggia sulla strada" },
+            { word: "AEREO", emoji: "✈️", category: "trasporti", hint: "Vola nel cielo" },
+            { word: "BARCA", emoji: "⛵", category: "trasporti", hint: "Naviga sull'acqua" },
+            { word: "BICI", emoji: "🚲", category: "trasporti", hint: "Ha due ruote e si usa pedalando" },
+            { word: "SOLE", emoji: "☀️", category: "natura", hint: "Illumina e riscalda la Terra" },
+            { word: "LUNA", emoji: "🌙", category: "natura", hint: "La vediamo spesso nel cielo di notte" },
+            { word: "FIORE", emoji: "🌸", category: "natura", hint: "È colorato e profumato" },
+            { word: "ALBERO", emoji: "🌳", category: "natura", hint: "Ha radici, tronco e foglie" },
+            { word: "NUVOLA", emoji: "☁️", category: "natura", hint: "È nel cielo e può portare la pioggia" },
+            { word: "LIBRO", emoji: "📘", category: "scuola", hint: "Ha tante pagine da leggere" },
+            { word: "PENNA", emoji: "🖊️", category: "scuola", hint: "Serve per scrivere" },
+            { word: "ZAINO", emoji: "🎒", category: "scuola", hint: "Contiene libri e quaderni" },
+            { word: "MATITA", emoji: "✏️", category: "scuola", hint: "Serve per scrivere e si può cancellare" },
+            { word: "SEDIA", emoji: "🪑", category: "casa", hint: "Serve per sedersi" },
+            { word: "PORTA", emoji: "🚪", category: "casa", hint: "Si apre per entrare in una stanza" },
+            { word: "LETTO", emoji: "🛏️", category: "casa", hint: "Serve per dormire" },
+            { word: "LAMPADA", emoji: "💡", category: "casa", hint: "Fa luce quando è accesa" }
+        ];
+
+        const categorySelect = document.getElementById("category");
+        const scoreElement = document.getElementById("score");
+        const completedElement = document.getElementById("completed");
+        const pictureElement = document.getElementById("picture");
+        const hintElement = document.getElementById("hint");
+        const answerArea = document.getElementById("answerArea");
+        const lettersArea = document.getElementById("lettersArea");
+        const messageElement = document.getElementById("message");
+        const checkButton = document.getElementById("checkButton");
+        const nextButton = document.getElementById("nextButton");
+        const undoButton = document.getElementById("undoButton");
+        const speakButton = document.getElementById("speakButton");
+        const progressBar = document.getElementById("progressBar");
+        const gameCard = document.getElementById("gameCard");
+        const stars = document.getElementById("stars");
+
+        let availableWords = [];
+        let currentWord = null;
+        let selectedLetters = [];
+        let shuffledLetters = [];
+        let score = 0;
+        let completed = 0;
+        let solved = false;
+        let previousWord = "";
+
+        function shuffle(array) {
+            const result = [...array];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+
+        function prepareCategory() {
+            const selectedCategory = categorySelect.value;
+            availableWords = selectedCategory === "tutte"
+                ? [...words]
+                : words.filter(item => item.category === selectedCategory);
+            previousWord = "";
+            startNewWord();
+        }
+
+        function startNewWord() {
+            solved = false;
+            selectedLetters = [];
+            checkButton.style.display = "inline-flex";
+            nextButton.style.display = "none";
+            messageElement.textContent = "Scegli le lettere!";
+            messageElement.style.color = "#ffffff";
+
+            let candidates = availableWords.filter(item => item.word !== previousWord);
+            if (candidates.length === 0) candidates = availableWords;
+
+            currentWord = candidates[Math.floor(Math.random() * candidates.length)];
+            previousWord = currentWord.word;
+
+            do {
+                shuffledLetters = shuffle(currentWord.word.split(""));
+            } while (
+                currentWord.word.length > 1 &&
+                shuffledLetters.join("") === currentWord.word
+            );
+
+            pictureElement.textContent = currentWord.emoji;
+            pictureElement.style.animation = "none";
+            void pictureElement.offsetWidth;
+            pictureElement.style.animation = "pictureIn .42s ease";
+            hintElement.textContent = `💡 Indizio: ${currentWord.hint}`;
+
+            updateProgress();
+            renderAnswer();
+            renderLetters();
+        }
+
+        function renderAnswer() {
+            answerArea.innerHTML = "";
+
+            currentWord.word.split("").forEach((_, index) => {
+                const slot = document.createElement("button");
+                slot.type = "button";
+                slot.className = "answer-slot";
+                slot.setAttribute("aria-label", selectedLetters[index]
+                    ? `Lettera ${selectedLetters[index]}. Tocca per rimuoverla`
+                    : `Casella ${index + 1} vuota`);
+
+                if (selectedLetters[index]) {
+                    slot.textContent = selectedLetters[index].letter;
+                    slot.classList.add("filled");
+                    slot.addEventListener("click", () => removeSelectedLetter(index));
+                } else {
+                    slot.textContent = "";
+                    slot.disabled = true;
+                }
+
+                answerArea.appendChild(slot);
+            });
+        }
+
+        function renderLetters() {
+            lettersArea.innerHTML = "";
+
+            shuffledLetters.forEach((letter, index) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "letter-button";
+                button.textContent = letter;
+                button.setAttribute("aria-label", `Lettera ${letter}`);
+                button.disabled = solved || selectedLetters.some(item => item.sourceIndex === index);
+                button.addEventListener("click", () => selectLetter(letter, index));
+                lettersArea.appendChild(button);
+            });
+        }
+
+        function selectLetter(letter, sourceIndex) {
+            if (solved || selectedLetters.length >= currentWord.word.length) return;
+            selectedLetters.push({ letter, sourceIndex });
+            messageElement.textContent = selectedLetters.length === currentWord.word.length
+                ? "Ora premi Controlla!"
+                : "Continua così!";
+            renderAnswer();
+            renderLetters();
+        }
+
+        function removeSelectedLetter(position) {
+            if (solved) return;
+            selectedLetters.splice(position, 1);
+            messageElement.textContent = "Scegli le lettere!";
+            renderAnswer();
+            renderLetters();
+        }
+
+        function undoLastLetter() {
+            if (solved || selectedLetters.length === 0) return;
+            selectedLetters.pop();
+            messageElement.textContent = "Ultima lettera rimossa";
+            renderAnswer();
+            renderLetters();
+        }
+
+        function checkAnswer() {
+            if (selectedLetters.length < currentWord.word.length) {
+                showTemporaryMessage("Manca ancora qualche lettera! 😊", "#fff3a6");
+                animateCard("error");
+                return;
+            }
+
+            const answer = selectedLetters.map(item => item.letter).join("");
+
+            if (answer === currentWord.word) {
+                solved = true;
+                score += 10;
+                completed += 1;
+                scoreElement.textContent = score;
+                completedElement.textContent = completed;
+                messageElement.textContent = "Bravissimo! Parola corretta! 🎉";
+                messageElement.style.color = "#fff7a9";
+                checkButton.style.display = "none";
+                nextButton.style.display = "inline-flex";
+                renderLetters();
+                updateProgress();
+                animateCard("success");
+                createStars();
+                speakWord();
+            } else {
+                messageElement.textContent = "Quasi! Riprova 😊";
+                messageElement.style.color = "#ffe0e5";
+                animateCard("error");
+            }
+        }
+
+        function showTemporaryMessage(text, color) {
+            messageElement.textContent = text;
+            messageElement.style.color = color;
+            window.setTimeout(() => {
+                if (!solved) {
+                    messageElement.textContent = "Scegli le lettere!";
+                    messageElement.style.color = "#ffffff";
+                }
+            }, 1500);
+        }
+
+        function animateCard(className) {
+            gameCard.classList.remove("success", "error");
+            void gameCard.offsetWidth;
+            gameCard.classList.add(className);
+            window.setTimeout(() => gameCard.classList.remove(className), 650);
+        }
+
+        function createStars() {
+            stars.innerHTML = "";
+            const positions = [
+                ["-210px", "-125px"], ["180px", "-135px"],
+                ["-250px", "20px"], ["220px", "35px"],
+                ["-170px", "150px"], ["150px", "165px"]
+            ];
+
+            positions.forEach(([x, y], index) => {
+                const star = document.createElement("span");
+                star.className = "flying-star";
+                star.textContent = index % 2 === 0 ? "⭐" : "✨";
+                star.style.setProperty("--x", x);
+                star.style.setProperty("--y", y);
+                star.style.animationDelay = `${index * 60}ms`;
+                stars.appendChild(star);
+            });
+
+            window.setTimeout(() => { stars.innerHTML = ""; }, 1300);
+        }
+
+        function updateProgress() {
+            const target = 10;
+            const percentage = Math.min((completed / target) * 100, 100);
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        function speakWord() {
+            if (!("speechSynthesis" in window) || !currentWord) {
+                showTemporaryMessage("L'audio non è disponibile su questo browser", "#fff3a6");
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(currentWord.word.toLowerCase());
+            utterance.lang = "it-IT";
+            utterance.rate = 0.75;
+            utterance.pitch = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        categorySelect.addEventListener("change", prepareCategory);
+        checkButton.addEventListener("click", checkAnswer);
+        nextButton.addEventListener("click", startNewWord);
+        undoButton.addEventListener("click", undoLastLetter);
+        speakButton.addEventListener("click", speakWord);
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Backspace") undoLastLetter();
+            if (event.key === "Enter") solved ? startNewWord() : checkAnswer();
+        });
+
+        prepareCategory();
+    </script>
+</body>
+</html>
