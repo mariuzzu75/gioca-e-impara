@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battaglia navale – tabellone</title>
+<style>
+:root{
+  --bg:#e6edf0;--fg:#0e2636;--muted:#4a6676;--panel:#f6f9fa;--line:#b9cbd4;
+  --sea:#123a52;--sea2:#0f3249;--grid:#2c6483;--ship:#9db4c1;--hit:#e4572e;--sunk:#7d220c;--miss:#d7e8f0;--signal:#f2c14e;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#08151e;--fg:#dbe8ee;--muted:#8fa9b8;--panel:#0d2230;--line:#1f4156}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.45}
+main{max-width:980px;margin:0 auto;padding:20px 16px 32px}
+h1{font-family:"Arial Narrow","Segoe UI",Arial,sans-serif;font-size:clamp(2rem,6vw,3rem);margin:0 0 4px;line-height:1}
+h2{font-size:1.25rem;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px}
+.hint{color:var(--muted);font-size:.9rem;margin:0 0 8px;min-height:2.6em}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+button.act{font:600 .95rem "Segoe UI",system-ui,sans-serif;padding:9px 14px;border-radius:6px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer;min-height:42px}
+button.act.alt{background:transparent;color:var(--fg)}
+button.act.on{outline:3px solid var(--signal);outline-offset:1px}
+.boards{display:grid;grid-template-columns:1fr;gap:24px;margin-top:6px}
+@media(min-width:760px){.boards{grid-template-columns:1fr 1fr;gap:28px}}
+.board{display:grid;grid-template-columns:repeat(11,1fr);gap:2px;background:var(--sea2);padding:6px;border-radius:8px;border:2px solid var(--grid)}
+.hd{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#8fb3c7;aspect-ratio:1;min-width:0}
+.c{aspect-ratio:1;min-width:0;border:0;padding:0;margin:0;background:var(--sea);border-radius:2px;position:relative;cursor:pointer}
+.c:hover{background:#1c5a7c}
+.c:focus-visible{outline:3px solid var(--signal);outline-offset:1px;z-index:2}
+.c.ship{background:var(--ship)}
+.c.miss::after{content:"";position:absolute;inset:36%;border-radius:50%;background:var(--miss)}
+.c.hit{background:var(--hit)}
+.c.hit.sunk{background:var(--sunk)}
+.c.hit::after,.c.hit::before{content:"";position:absolute;left:18%;right:18%;top:calc(50% - 1.5px);height:3px;background:#fff;transform:rotate(45deg);border-radius:2px}
+.c.hit::before{transform:rotate(-45deg)}
+.fleet{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;color:var(--muted)}
+.fleet li.down{text-decoration:line-through;color:var(--hit)}
+.fleet button{all:unset;cursor:pointer}
+.fleet button:focus-visible{outline:2px solid var(--signal)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Battaglia navale</h1>
+  <p class="sub">Tabellone per segnare la partita. Funziona senza internet e non si collega a nessuno.</p>
+  <div class="row">
+    <button class="act" id="mPlace" type="button">Posiziona le mie navi</button>
+    <button class="act alt" id="mMark" type="button">Segna i colpi ricevuti</button>
+    <button class="act alt" id="reset" type="button">Nuova partita</button>
+  </div>
+  <div class="boards">
+    <section>
+      <h2>Le mie navi</h2>
+      <p class="hint" id="hintL"></p>
+      <div class="row" id="placeTools">
+        <span id="shipBtns" class="row" style="margin:0"></span>
+        <button class="act alt" id="rot" type="button"></button>
+        <button class="act alt" id="rnd" type="button">A caso</button>
+        <button class="act alt" id="clr" type="button">Svuota</button>
+      </div>
+      <div class="board" id="pb"></div>
+      <ul class="fleet" id="pf"></ul>
+    </section>
+    <section>
+      <h2>I miei colpi</h2>
+      <p class="hint">Tocca una casella per cambiarla: acqua, colpito, affondato, vuota. Tocca il nome di una nave nemica per segnarla affondata.</p>
+      <div class="board" id="eb"></div>
+      <ul class="fleet" id="ef"></ul>
+    </section>
+  </div>
+</main>
+<script>
+var N=10, LET="ABCDEFGHIJ";
+var FLEET=[["Portaerei",5],["Corazzata",4],["Incrociatore",3],["Sottomarino",3],["Cacciatorpediniere",2]];
+var KEY="bn-tabellone";
+function $(id){return document.getElementById(id)}
+function lab(i){return LET[i%N]+(Math.floor(i/N)+1)}
+function blank(){return{ships:FLEET.map(function(f){return{n:f[0],l:f[1],cells:null}}),recv:Array(100).fill(0),shots:Array(100).fill(0),esunk:[false,false,false,false,false]}}
+var S=blank(), mode="place", sel=0, horiz=true;
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.ships&&p.ships.length===5)S=p}}catch(e){}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+function atMap(){var a=Array(100).fill(-1);S.ships.forEach(function(s,id){if(s.cells)s.cells.forEach(function(c){a[c]=id})});return a}
+function cellsFor(l,i){var r=Math.floor(i/N),c=i%N,o=[];if(horiz?c+l>N:r+l>N)return null;for(var k=0;k<l;k++)o.push(horiz?i+k:i+k*N);return o}
+function free(cs){var a=atMap();return cs&&cs.every(function(c){return a[c]<0})}
+function board(fn){
+  var h='<div class="hd"></div>',r,c,i;
+  for(c=0;c<N;c++)h+='<div class="hd">'+LET[c]+'</div>';
+  for(r=0;r<N;r++){h+='<div class="hd">'+(r+1)+'</div>';for(c=0;c<N;c++){i=r*N+c;h+='<button type="button" class="c '+fn(i)+'" data-i="'+i+'" aria-label="'+lab(i)+'"></button>'}}
+  return h;
+}
+function render(){
+  var at=atMap();
+  $("mPlace").classList.toggle("alt",mode!=="place");$("mPlace").classList.toggle("on",mode==="place");
+  $("mMark").classList.toggle("alt",mode!=="mark");$("mMark").classList.toggle("on",mode==="mark");
+  $("placeTools").style.display=mode==="place"?"flex":"none";
+  $("hintL").textContent=mode==="place"
+    ?"Scegli una nave e tocca la casella da cui parte. Tocca una nave già posata per toglierla."
+    :"Tocca una casella quando l’avversario spara: acqua, colpito, vuota.";
+  $("pb").innerHTML=board(function(i){
+    if(S.recv[i]===2)return"hit";
+    if(S.recv[i]===1)return"miss";
+    return at[i]>=0?"ship":"";
+  });
+  $("pf").innerHTML=S.ships.map(function(s){
+    var down=s.cells&&s.cells.every(function(c){return S.recv[c]===2});
+    return'<li class="'+(down?"down":"")+'">'+s.n+' ('+s.l+')</li>';
+  }).join("");
+  $("eb").innerHTML=board(function(i){
+    var v=S.shots[i];
+    return v===1?"miss":v===2?"hit":v===3?"hit sunk":"";
+  });
+  $("ef").innerHTML=FLEET.map(function(f,id){
+    return'<li class="'+(S.esunk[id]?"down":"")+'"><button type="button" data-e="'+id+'">'+f[0]+' ('+f[1]+')</button></li>';
+  }).join("");
+  $("shipBtns").innerHTML=S.ships.map(function(s,id){
+    return'<button type="button" class="act alt'+(id===sel?" on":"")+'" data-s="'+id+'">'+s.n+' ('+s.l+')'+(s.cells?" ✓":"")+'</button>';
+  }).join("");
+  $("rot").textContent=horiz?"Orizzontale":"Verticale";
+}
+$("mPlace").onclick=function(){mode="place";render()};
+$("mMark").onclick=function(){mode="mark";render()};
+$("rot").onclick=function(){horiz=!horiz;render()};
+$("clr").onclick=function(){S.ships.forEach(function(s){s.cells=null});sel=0;store();render()};
+$("rnd").onclick=function(){
+  S.ships.forEach(function(s){s.cells=null});
+  S.ships.forEach(function(s){for(;;){horiz=Math.random()<.5;var cs=cellsFor(s.l,Math.floor(Math.random()*100));if(free(cs)){s.cells=cs;break}}});
+  store();render();
+};
+$("reset").onclick=function(){if(confirm("Iniziare una nuova partita? Navi e segni verranno cancellati.")){S=blank();sel=0;mode="place";store();render()}};
+$("shipBtns").onclick=function(e){var b=e.target.closest("[data-s]");if(b){sel=+b.dataset.s;render()}};
+$("pb").onclick=function(e){
+  var b=e.target.closest("[data-i]");if(!b)return;
+  var i=+b.dataset.i;
+  if(mode==="mark"){S.recv[i]=(S.recv[i]+1)%3}
+  else{
+    var id=atMap()[i];
+    if(id>=0){S.ships[id].cells=null;sel=id}
+    else{
+      var s=S.ships[sel],cs=cellsFor(s.l,i);
+      s.cells=null;
+      if(!free(cs)){render();return}
+      s.cells=cs;
+      for(var k=0;k<5;k++)if(!S.ships[k].cells){sel=k;break}
+    }
+  }
+  store();render();
+};
+$("eb").onclick=function(e){
+  var b=e.target.closest("[data-i]");if(!b)return;
+  var i=+b.dataset.i;S.shots[i]=(S.shots[i]+1)%4;store();render();
+};
+$("ef").onclick=function(e){var b=e.target.closest("[data-e]");if(b){var id=+b.dataset.e;S.esunk[id]=!S.esunk[id];store();render()}};
+render();
+</script>
+</body>
+</html>
