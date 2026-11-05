@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6c63ff">
+  <title>Geometria Adventure</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Geometria Adventure, home">
+      <span class="brand-mark">△</span><span>GEOMETRIA <b>ADVENTURE</b></span>
+    </a>
+    <div class="score-pill">⭐ <span id="totalStars">0</span> stelle</div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">PICCOLI ESPLORATORI, GRANDI SCOPERTE</span>
+        <h1>Pronti a giocare<br><em>con la geometria?</em></h1>
+        <p>Scopri le forme, disegna, costruisci triangoli e diventa un'esperta degli angoli!</p>
+        <div class="hero-tags"><span>🎨 Disegna</span><span>🧩 Risolvi</span><span>⭐ Impara</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="shape shape-circle"></div><div class="shape shape-triangle"></div>
+        <div class="shape shape-square"></div><div class="shape shape-diamond"></div>
+        <div class="hero-spark">✦</div>
+      </div>
+    </section>
+
+    <section class="worlds-section">
+      <div class="section-heading">
+        <div><span class="eyebrow">SCEGLI LA TUA AVVENTURA</span><h2>I mondi della geometria</h2></div>
+        <span class="progress-label" id="progressLabel">0 di 5 mondi visitati</span>
+      </div>
+      <div class="world-grid">
+        <button class="world-card world-shapes" data-world="shapes">
+          <span class="world-number">MONDO 1</span><span class="world-icon">🔷</span>
+          <strong>Il paese delle forme</strong><small>Riconosci e abbina le figure</small><span class="world-go">ENTRA →</span>
+        </button>
+        <button class="world-card world-draw" data-world="draw">
+          <span class="world-number">MONDO 2</span><span class="world-icon">✏️</span>
+          <strong>La bottega del disegno</strong><small>Disegna con linee e forme</small><span class="world-go">ENTRA →</span>
+        </button>
+        <button class="world-card world-triangles" data-world="triangles">
+          <span class="world-number">MONDO 3</span><span class="world-icon">🔺</span>
+          <strong>L'isola dei triangoli</strong><small>Scopri i diversi triangoli</small><span class="world-go">ENTRA →</span>
+        </button>
+        <button class="world-card world-angles" data-world="angles">
+          <span class="world-number">MONDO 4</span><span class="world-icon">📐</span>
+          <strong>Il regno degli angoli</strong><small>Acuto, retto, ottuso e piatto</small><span class="world-go">ENTRA →</span>
+        </button>
+        <button class="world-card world-tangram" data-world="tangram">
+          <span class="world-number">MONDO 5</span><span class="world-icon">🧩</span>
+          <strong>Il laboratorio delle forme</strong><small>Componi figure e animali</small><span class="world-go">ENTRA →</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="gamePanel" class="game-panel hidden" aria-live="polite">
+      <div class="game-top">
+        <button id="backHome" class="back-button">← Tutti i mondi</button>
+        <div class="game-stars">⭐ <span id="sessionStars">0</span></div>
+      </div>
+      <div id="gameContent"></div>
+    </section>
+
+    <section class="tip-box"><span>💡</span><p><b>Un piccolo consiglio:</b> non avere fretta! Puoi giocare più volte, provare, cancellare e ricominciare.</p></section>
+  </main>
+  <footer>FATTO PER IMPARARE GIOCANDO <span>✦</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>
