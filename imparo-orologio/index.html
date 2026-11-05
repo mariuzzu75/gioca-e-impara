@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#59c9c0">
+  <title>Imparo a leggere l'orologio!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <a class="back" href="../index.html">← Torna ai giochi</a>
+      <div class="eyebrow">LA MIA AVVENTURA NEL TEMPO</div>
+      <h1>🕒 Imparo l'orologio!</h1>
+      <p>Un passo alla volta: osserva, prova e diventa bravissima!</p>
+    </header>
+
+    <section class="progress-panel">
+      <div class="progress-copy"><span id="levelName">Livello 1 · Le ore esatte</span><strong id="score">⭐ 0</strong></div>
+      <div class="progress-track"><div id="progressFill"></div></div>
+      <nav class="levels" aria-label="Livelli">
+        <button class="level active" data-level="0">1. Ore</button>
+        <button class="level" data-level="1">2. Mezze</button>
+        <button class="level" data-level="2">3. Quarti</button>
+        <button class="level" data-level="3">4. Minuti</button>
+      </nav>
+    </section>
+
+    <section class="lesson">
+      <h2>Prima conosciamo le lancette!</h2>
+      <div class="hands-explain">
+        <div><span class="mini-hand short"></span><b>LANCETTA CORTA</b><small>Indica le ORE</small></div>
+        <div><span class="mini-hand long"></span><b>LANCETTA LUNGA</b><small>Indica i MINUTI</small></div>
+      </div>
+      <p class="tip">💡 Quando la lancetta lunga è sul 12, è un'ora esatta!</p>
+    </section>
+
+    <section class="game">
+      <div class="game-heading">
+        <div><span class="tag">GIOCHIAMO!</span><h2 id="question">Che ore sono?</h2></div>
+        <button id="newQuestion" class="soft-button">Nuova domanda ↻</button>
+      </div>
+
+      <div class="play-area">
+        <div class="clock-wrap">
+          <svg id="clock" viewBox="0 0 320 320" role="img" aria-label="Orologio analogico">
+            <circle cx="160" cy="160" r="146" class="clock-rim"/>
+            <circle cx="160" cy="160" r="135" class="clock-face"/>
+            <g id="ticks"></g>
+            <g id="numbers"></g>
+            <line id="hourHand" x1="160" y1="160" x2="160" y2="92" class="hour-hand"/>
+            <line id="minuteHand" x1="160" y1="160" x2="160" y2="48" class="minute-hand"/>
+            <circle cx="160" cy="160" r="9" class="pin"/>
+          </svg>
+        </div>
+        <div class="challenge">
+          <div class="ask-label" id="askLabel">CHE ORA SEGNA?</div>
+          <div class="digital" id="digitalTime">--:--</div>
+          <p id="instruction">Guarda le lancette e scegli la risposta giusta.</p>
+          <div id="answers" class="answers"></div>
+          <div id="feedback" class="feedback" aria-live="polite">Pronta? Tocca la risposta corretta!</div>
+        </div>
+      </div>
+      <div class="set-clock-area">
+        <h3 id="setTitle">Prova anche tu!</h3>
+        <p id="setInstruction">Imposta l'ora richiesta spostando le lancette dell'orologio.</p>
+        <div class="set-controls">
+          <label>ORE <select id="setHour"></select></label>
+          <label>MINUTI <select id="setMinute"></select></label>
+          <button id="checkClock" class="primary">Controlla!</button>
+        </div>
+        <div id="setFeedback" class="feedback" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <footer>🌟 Ogni tentativo è un passo avanti! 🌟</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
