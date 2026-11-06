@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6c63ff"><title>Coding Adventure</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app-shell">
+<header class="topbar">
+<a class="home-link" href="../index.html" aria-label="Torna alla home">⌂</a>
+<div><p class="eyebrow">IMPARA GIOCANDO</p><h1>💻 Coding Adventure</h1><p class="subtitle">Dai le istruzioni al tuo personaggio e raggiungi la stella!</p></div>
+<div class="level-pill" id="levelPill">Livello 1</div>
+</header>
+<section class="setup-panel panel">
+<div class="setup-item"><label for="characterSelect">1. Scegli il personaggio</label>
+<select id="characterSelect"><option value="🦊">🦊 Volpe</option><option value="🐱">🐱 Gatto</option><option value="🤖">🤖 Robot</option><option value="👩‍🚀">👩‍🚀 Astronauta</option><option value="🐸">🐸 Rana</option><option value="🦄">🦄 Unicorno</option></select></div>
+<div class="setup-item"><label for="difficultySelect">2. Scegli la modalità</label>
+<select id="difficultySelect"><option value="beginner">🌱 Principiante · griglia 4×4</option><option value="explorer">🧭 Esploratore · griglia 5×5</option><option value="programmer">🚀 Programmatore · griglia 6×6</option><option value="challenge">💎 Sfida · griglia 6×6 + ripetizioni</option></select></div>
+<button class="primary-button new-game" id="newGameBtn">🎲 Nuovo percorso</button>
+</section>
+<section class="game-layout">
+<div class="board-panel panel"><div class="section-heading"><div><h2>Il percorso</h2><p id="levelDescription">Raggiungi la stella seguendo le frecce.</p></div><div class="legend"><span>⭐ Arrivo</span><span>💎 Gemma</span><span>🪨 Ostacolo</span></div></div>
+<div id="board" class="board" role="grid" aria-label="Griglia del percorso"></div>
+<div class="board-footer"><span id="movesInfo">Comandi: 0</span><span id="gemsInfo">Gemme: 0/0</span></div></div>
+<aside class="controls-column">
+<section class="panel command-panel"><h2>3. Costruisci il programma</h2><p class="hint">Tocca le frecce nell'ordine in cui vuoi far muovere il personaggio.</p>
+<div class="arrow-pad" aria-label="Comandi di movimento"><span></span><button class="arrow-button" data-dir="up" aria-label="Su">⬆️</button><span></span><button class="arrow-button" data-dir="left" aria-label="Sinistra">⬅️</button><button class="arrow-button" data-dir="down" aria-label="Giù">⬇️</button><button class="arrow-button" data-dir="right" aria-label="Destra">➡️</button></div>
+<div class="repeat-area" id="repeatArea"><button class="repeat-button" id="repeatBtn">🔁 Ripeti ultimo comando ×3</button><small>Disponibile nella modalità Sfida. Ripete tre volte l'ultima freccia inserita.</small></div>
+<div class="program-title"><strong>Il tuo programma</strong><span id="programCount">0 istruzioni</span></div>
+<div id="program" class="program-list"><span class="empty-program">Le tue frecce appariranno qui…</span></div>
+<div class="edit-buttons"><button class="secondary-button" id="undoBtn">↶ Annulla</button><button class="secondary-button" id="clearBtn">🗑️ Cancella</button></div>
+<button class="primary-button run-button" id="runBtn">▶ AVVIA IL PROGRAMMA</button>
+<button class="secondary-button step-button" id="stepBtn">👣 Esegui un passo alla volta</button>
+<div class="run-controls"><button class="secondary-button" id="nextStepBtn" disabled>Passo successivo →</button><button class="secondary-button" id="resetRunBtn" disabled>↺ Ricomincia</button></div>
+</section>
+<section class="panel status-panel"><h2>💬 Come sta andando?</h2><p id="message" class="message" aria-live="polite">Scegli il personaggio e prepara le istruzioni!</p><div class="stats"><div><strong id="stars">0</strong><span>stelle vinte</span></div><div><strong id="gemsCollected">0</strong><span>gemme raccolte</span></div></div></section>
+</aside></section><footer>✨ Ogni freccia è un'istruzione: proprio così ragiona un programmatore!</footer>
+</main>
+<div id="winOverlay" class="overlay hidden"><div class="win-card"><div class="win-emoji">🏆</div><h2>Missione completata!</h2><p id="winText">Hai raggiunto la stella!</p><button class="primary-button" id="nextLevelBtn">🎲 Prova un nuovo percorso</button><button class="secondary-button" id="closeWinBtn">Resta qui</button></div></div>
+<script src="script.js"></script></body></html>
