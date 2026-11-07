@@ -10,7 +10,7 @@ $("#totalStars").textContent = totalStars;
 updateProgress();
 
 const shapeData = [
-  {name:"Cerchio", cls:"circle", sides:0, fact:"Il cerchio Ã¨ rotondo e non ha lati."},
+  {name:"Cerchio", cls:"circle", sides:0, fact:"Il cerchio è rotondo e non ha lati."},
   {name:"Quadrato", cls:"square", sides:4, fact:"Il quadrato ha 4 lati tutti uguali."},
   {name:"Triangolo", cls:"triangle", sides:3, fact:"Il triangolo ha 3 lati e 3 angoli."},
   {name:"Rettangolo", cls:"rectangle", sides:4, fact:"Il rettangolo ha 4 lati: quelli opposti sono uguali."},
@@ -20,7 +20,7 @@ const shapeData = [
 ];
 const triangleQuestions = [
   {type:"equilatero",desc:"I tre lati sono tutti uguali.",sides:[70,70,70],labels:["Equilatero","Isoscele","Scaleno"]},
-  {type:"isoscele",desc:"Due lati sono uguali e uno Ã¨ diverso.",sides:[78,78,110],labels:["Scaleno","Isoscele","Equilatero"]},
+  {type:"isoscele",desc:"Due lati sono uguali e uno è diverso.",sides:[78,78,110],labels:["Scaleno","Isoscele","Equilatero"]},
   {type:"scaleno",desc:"Tutti e tre i lati sono diversi.",sides:[62,88,112],labels:["Isoscele","Equilatero","Scaleno"]}
 ];
 let triangleIndex = 0, angleIndex = 0, angleValue = 55;
@@ -30,7 +30,7 @@ function updateProgress(){
   document.querySelectorAll(".world-card").forEach(b=>{
     const done=visited.includes(b.dataset.world);
     b.classList.toggle("completed",done);
-    b.querySelector(".world-go").textContent=done?"â­ COMPLETATO":"ENTRA â†’";
+    b.querySelector(".world-go").textContent=done?"⭐ COMPLETATO":"ENTRA →";
   });
 }
 function awardStar(n=1){
@@ -57,34 +57,34 @@ function renderShapes(){
 function showShapeQuestion(){
   const q=shapeData[quizIndex%shapeData.length];
   const choices=[q,...shapeData.filter(x=>x.name!==q.name).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
-  gameContent.innerHTML=heading("MONDO 1 Â· IL PAESE DELLE FORME","Che figura Ã¨?","Guarda bene la figura e scegli il suo nome.")+
+  gameContent.innerHTML=heading("MONDO 1 · IL PAESE DELLE FORME","Che figura è?","Guarda bene la figura e scegli il suo nome.")+
   `<div class="question-card"><h3>Come si chiama questa figura?</h3><span class="mini-shape ${q.cls}" style="width:75px;height:75px;${q.cls==="triangle"?"border-left-width:38px;border-right-width:38px;border-bottom-width:72px":""}"></span>
   <div class="shape-options">${choices.map(c=>`<button class="option" data-answer="${c.name}"><span class="mini-shape ${c.cls}"></span>${c.name}</button>`).join("")}</div>
-  <div id="feedback" class="feedback"></div><div class="action-row"><button id="nextQuestion" class="primary-btn" disabled>Prossima figura â†’</button></div></div>
+  <div id="feedback" class="feedback"></div><div class="action-row"><button id="nextQuestion" class="primary-btn" disabled>Prossima figura →</button></div></div>
   <p class="tool-hint" style="text-align:center">Domanda ${quizIndex+1} di ${shapeData.length}</p>`;
   document.querySelectorAll("[data-answer]").forEach(b=>b.addEventListener("click",()=>{
     if($("#nextQuestion").disabled===false)return;
     const ok=b.dataset.answer===q.name;
     document.querySelectorAll("[data-answer]").forEach(x=>{x.disabled=true;if(x.dataset.answer===q.name)x.classList.add("correct");});
     if(!ok)b.classList.add("wrong");
-    $("#feedback").textContent=ok?`Bravissima! ${q.fact}`:`Quasi! Questa Ã¨ ${q.name}. ${q.fact}`;
+    $("#feedback").textContent=ok?`Bravissima! ${q.fact}`:`Quasi! Questa è ${q.name}. ${q.fact}`;
     $("#feedback").className="feedback "+(ok?"good":"bad");
     if(ok){quizScore++;awardStar();}
     $("#nextQuestion").disabled=false;
   }));
   $("#nextQuestion").addEventListener("click",()=>{
     quizIndex++;
-    if(quizIndex>=shapeData.length){gameContent.innerHTML=heading("MONDO 1 Â· MISSIONE COMPLETATA","Esploratrice delle forme! ðŸ†",`Hai riconosciuto ${quizScore} figure su ${shapeData.length}.`)+`<div class="success-banner">â­ Hai raccolto ${sessionStars} stelle in questo mondo!</div><div class="action-row"><button class="primary-btn" id="replay">Gioca ancora</button><button class="secondary-btn" id="home">Torna ai mondi</button></div>`;$("#replay").onclick=renderShapes;$("#home").onclick=()=>$("#backHome").click();}
+    if(quizIndex>=shapeData.length){gameContent.innerHTML=heading("MONDO 1 · MISSIONE COMPLETATA","Esploratrice delle forme! 🏆",`Hai riconosciuto ${quizScore} figure su ${shapeData.length}.`)+`<div class="success-banner">⭐ Hai raccolto ${sessionStars} stelle in questo mondo!</div><div class="action-row"><button class="primary-btn" id="replay">Gioca ancora</button><button class="secondary-btn" id="home">Torna ai mondi</button></div>`;$("#replay").onclick=renderShapes;$("#home").onclick=()=>$("#backHome").click();}
     else showShapeQuestion();
   });
 }
 
 function renderDraw(){
-  gameContent.innerHTML=heading("MONDO 2 Â· LA BOTTEGA DEL DISEGNO","La tua lavagna magica","Scegli uno strumento e disegna! Puoi usare il mouse o il dito sullo schermo.")+
-  `<div class="drawing-layout"><div class="canvas-wrap"><canvas id="drawCanvas" width="900" height="600"></canvas></div><aside class="draw-tools"><h3>ðŸ–ï¸ Strumenti</h3>
-  <button class="tool-btn active" data-tool="free">âœï¸ Disegno libero</button><button class="tool-btn" data-tool="line">ðŸ“ Linea</button><button class="tool-btn" data-tool="rect">ðŸŸ¦ Rettangolo</button><button class="tool-btn" data-tool="square">ðŸŸª Quadrato</button><button class="tool-btn" data-tool="circle">ðŸ”µ Cerchio</button><button class="tool-btn" data-tool="triangle">ðŸ”º Triangolo</button>
+  gameContent.innerHTML=heading("MONDO 2 · LA BOTTEGA DEL DISEGNO","La tua lavagna magica","Scegli uno strumento e disegna! Puoi usare il mouse o il dito sullo schermo.")+
+  `<div class="drawing-layout"><div class="canvas-wrap"><canvas id="drawCanvas" width="900" height="600"></canvas></div><aside class="draw-tools"><h3>🖍️ Strumenti</h3>
+  <button class="tool-btn active" data-tool="free">✏️ Disegno libero</button><button class="tool-btn" data-tool="line">📏 Linea</button><button class="tool-btn" data-tool="rect">🟦 Rettangolo</button><button class="tool-btn" data-tool="square">🟪 Quadrato</button><button class="tool-btn" data-tool="circle">🔵 Cerchio</button><button class="tool-btn" data-tool="triangle">🔺 Triangolo</button>
   <label class="tool-hint">Colore <input id="penColor" type="color" value="#6558e8"></label><label class="tool-hint">Spessore <input id="penSize" type="range" min="2" max="18" value="6"></label>
-  <button id="undoDraw" class="tool-btn">â†¶ Annulla</button><button id="clearDraw" class="tool-btn">ðŸ§½ Cancella tutto</button><p class="tool-hint">Prova a disegnare una casa usando un quadrato, un triangolo e un rettangolo!</p></aside></div>`;
+  <button id="undoDraw" class="tool-btn">↶ Annulla</button><button id="clearDraw" class="tool-btn">🧽 Cancella tutto</button><p class="tool-hint">Prova a disegnare una casa usando un quadrato, un triangolo e un rettangolo!</p></aside></div>`;
   setupCanvas();
 }
 function setupCanvas(){
@@ -115,28 +115,28 @@ function renderTriangles(){
 function showTriangle(){
   const q=triangleQuestions[triangleIndex];
   const pts=trianglePoints(q.sides);
-  gameContent.innerHTML=heading("MONDO 3 Â· L'ISOLA DEI TRIANGOLI","Che triangolo sarÃ ?","Osserva i lati e scegli il tipo corretto.")+
+  gameContent.innerHTML=heading("MONDO 3 · L'ISOLA DEI TRIANGOLI","Che triangolo sarà?","Osserva i lati e scegli il tipo corretto.")+
   `<div class="triangle-stage"><svg class="diagram" viewBox="0 0 260 210" role="img" aria-label="Disegno di un triangolo"><polygon points="${pts}" fill="#ffcfdf" stroke="#d94f83" stroke-width="5" stroke-linejoin="round"/></svg><div style="max-width:300px"><h3>${q.desc}</h3><p class="tool-hint">Suggerimento: conta quanti lati hanno la stessa lunghezza.</p></div></div>
-  <div class="choice-row">${q.labels.map(x=>`<button class="choice-btn" data-tri="${x}">${x}</button>`).join("")}</div><div id="feedback" class="feedback" style="text-align:center"></div><div class="action-row"><button id="nextTri" class="primary-btn" disabled>Prossimo triangolo â†’</button></div>`;
+  <div class="choice-row">${q.labels.map(x=>`<button class="choice-btn" data-tri="${x}">${x}</button>`).join("")}</div><div id="feedback" class="feedback" style="text-align:center"></div><div class="action-row"><button id="nextTri" class="primary-btn" disabled>Prossimo triangolo →</button></div>`;
   document.querySelectorAll("[data-tri]").forEach(b=>b.onclick=()=>{
     if($("#nextTri").disabled===false)return;const ok=b.dataset.tri.toLowerCase()===q.type;
     document.querySelectorAll("[data-tri]").forEach(x=>{x.disabled=true;if(x.dataset.tri.toLowerCase()===q.type)x.classList.add("correct");});
     if(!ok)b.classList.add("wrong");
-    $("#feedback").textContent=ok?"Esatto! Hai osservato benissimo!":"Riproveremo! La risposta corretta Ã¨: "+q.type+".";
+    $("#feedback").textContent=ok?"Esatto! Hai osservato benissimo!":"Riproveremo! La risposta corretta è: "+q.type+".";
     $("#feedback").className="feedback "+(ok?"good":"bad");if(ok)awardStar();$("#nextTri").disabled=false;
   });
-  $("#nextTri").onclick=()=>{triangleIndex++;if(triangleIndex>=triangleQuestions.length){gameContent.innerHTML=heading("MONDO 3 Â· MISSIONE COMPLETATA","Maestra dei triangoli! ðŸ”º","Hai scoperto tre modi per classificare i triangoli.")+`<div class="success-banner">â­ Stelle raccolte: ${sessionStars}</div><div class="action-row"><button class="primary-btn" id="again">Rigioca</button></div>`;$("#again").onclick=renderTriangles;}else showTriangle();};
+  $("#nextTri").onclick=()=>{triangleIndex++;if(triangleIndex>=triangleQuestions.length){gameContent.innerHTML=heading("MONDO 3 · MISSIONE COMPLETATA","Maestra dei triangoli! 🔺","Hai scoperto tre modi per classificare i triangoli.")+`<div class="success-banner">⭐ Stelle raccolte: ${sessionStars}</div><div class="action-row"><button class="primary-btn" id="again">Rigioca</button></div>`;$("#again").onclick=renderTriangles;}else showTriangle();};
 }
 function trianglePoints(s){const [a,b,c]=s;const x=(c*c+a*a-b*b)/(2*c);const y=Math.sqrt(Math.max(100,a*a-x*x));const scale=1.3;return `${30},${180} ${30+x*scale},${180-y*scale} ${30+c*scale},${180}`;}
 
 function renderAngles(){angleIndex=0;showAngle();}
-const angleLessons=[{name:"Angolo acuto",desc:"Ãˆ piÃ¹ piccolo di un angolo retto.",min:1,max:89,target:45},{name:"Angolo retto",desc:"Ãˆ un angolo preciso come quello di un foglio!",min:90,max:90,target:90},{name:"Angolo ottuso",desc:"Ãˆ piÃ¹ grande di un angolo retto ma piÃ¹ piccolo di quello piatto.",min:91,max:179,target:125},{name:"Angolo piatto",desc:"Forma una linea dritta: misura 180 gradi.",min:180,max:180,target:180}];
+const angleLessons=[{name:"Angolo acuto",desc:"È più piccolo di un angolo retto.",min:1,max:89,target:45},{name:"Angolo retto",desc:"È un angolo preciso come quello di un foglio!",min:90,max:90,target:90},{name:"Angolo ottuso",desc:"È più grande di un angolo retto ma più piccolo di quello piatto.",min:91,max:179,target:125},{name:"Angolo piatto",desc:"Forma una linea dritta: misura 180 gradi.",min:180,max:180,target:180}];
 function showAngle(){
   const a=angleLessons[angleIndex];angleValue=a.target;
-  gameContent.innerHTML=heading("MONDO 4 Â· IL REGNO DEGLI ANGOLI","Costruiamo un angolo!","Muovi il cursore e osserva come cambia l'apertura.")+
+  gameContent.innerHTML=heading("MONDO 4 · IL REGNO DEGLI ANGOLI","Costruiamo un angolo!","Muovi il cursore e osserva come cambia l'apertura.")+
   `<div class="angle-stage"><svg class="diagram" viewBox="0 0 300 230"><line x1="55" y1="175" x2="265" y2="175" stroke="#c8c5df" stroke-width="2" stroke-dasharray="5 6"/><line id="armOne" x1="70" y1="175" x2="250" y2="175" stroke="#665cf5" stroke-width="9" stroke-linecap="round"/><line id="armTwo" x1="70" y1="175" x2="200" y2="45" stroke="#ff8d69" stroke-width="9" stroke-linecap="round"/><circle cx="70" cy="175" r="9" fill="#28264b"/><path id="angleArc" d="" fill="#ffe7a8" stroke="#e7a62e" stroke-width="2"/></svg>
-  <div class="angle-controls"><h3 id="angleName">${a.name}</h3><p>${a.desc}</p><div class="angle-value"><span id="angleNumber">${angleValue}</span>Â°</div><input id="angleSlider" type="range" min="0" max="180" value="${angleValue}"><p class="tool-hint">Prova a trovare un angolo ${a.name.toLowerCase()}.</p></div></div>
-  <div class="action-row"><button id="checkAngle" class="primary-btn">Controlla il mio angolo</button><button id="nextAngle" class="secondary-btn">Prossimo angolo â†’</button></div><div id="feedback" class="feedback" style="text-align:center"></div>`;
+  <div class="angle-controls"><h3 id="angleName">${a.name}</h3><p>${a.desc}</p><div class="angle-value"><span id="angleNumber">${angleValue}</span>°</div><input id="angleSlider" type="range" min="0" max="180" value="${angleValue}"><p class="tool-hint">Prova a trovare un angolo ${a.name.toLowerCase()}.</p></div></div>
+  <div class="action-row"><button id="checkAngle" class="primary-btn">Controlla il mio angolo</button><button id="nextAngle" class="secondary-btn">Prossimo angolo →</button></div><div id="feedback" class="feedback" style="text-align:center"></div>`;
   const slider=$("#angleSlider");
   slider.oninput=()=>{angleValue=Number(slider.value);drawAngle();};
   function drawAngle(){
@@ -152,7 +152,7 @@ function showAngle(){
     $("#feedback").textContent=ok?"Perfetto! Hai costruito l'angolo giusto!":"Non ancora! Prova a regolare il cursore e osserva l'apertura.";
     $("#feedback").className="feedback "+(ok?"good":"bad");if(ok&&!$("#checkAngle").dataset.won){awardStar();$("#checkAngle").dataset.won="1";}
   };
-  $("#nextAngle").onclick=()=>{angleIndex++;if(angleIndex>=angleLessons.length){gameContent.innerHTML=heading("MONDO 4 Â· MISSIONE COMPLETATA","Che occhio per gli angoli! ðŸ“","Hai esplorato quattro tipi di angolo.")+`<div class="success-banner">â­ Stelle raccolte: ${sessionStars}</div><div class="action-row"><button class="primary-btn" id="again">Rigioca</button></div>`;$("#again").onclick=renderAngles;}else showAngle();};
+  $("#nextAngle").onclick=()=>{angleIndex++;if(angleIndex>=angleLessons.length){gameContent.innerHTML=heading("MONDO 4 · MISSIONE COMPLETATA","Che occhio per gli angoli! 📐","Hai esplorato quattro tipi di angolo.")+`<div class="success-banner">⭐ Stelle raccolte: ${sessionStars}</div><div class="action-row"><button class="primary-btn" id="again">Rigioca</button></div>`;$("#again").onclick=renderAngles;}else showAngle();};
 }
 
 function renderTangram(){
@@ -161,10 +161,10 @@ function renderTangram(){
   const signal=shapeBoardController.signal;
   const palette=["#f47c91","#6c9cff","#f5c65b","#65cdb1","#9b83ed","#f29b58","#65b9d8"];
   const shapeNames={triangle:"Triangolo",square:"Quadrato",rectangle:"Rettangolo",circle:"Cerchio"};
-  const shapeIcons={triangle:"ðŸ”º",square:"ðŸŸ¦",rectangle:"â–­",circle:"ðŸ”µ"};
+  const shapeIcons={triangle:"🔺",square:"🟦",rectangle:"▭",circle:"🔵"};
 
   gameContent.innerHTML=heading(
-    "MONDO 5 Â· IL LABORATORIO DELLE FORME",
+    "MONDO 5 · IL LABORATORIO DELLE FORME",
     "La lavagna delle forme",
     "Scegli forma, dimensione e colore. Poi trascina, ruota, ingrandisci o elimina ogni figura."
   )+`<div class="shape-lab">
@@ -186,7 +186,7 @@ function renderTangram(){
         <h3>2. Colore</h3>
         <div class="color-palette" id="shapePalette" role="group" aria-label="Colori">
           ${palette.map((color,i)=>`<button type="button" class="color-swatch${i===0?" active":""}" data-color="${color}" style="--swatch:${color}" aria-label="Colore ${i+1}"></button>`).join("")}
-          <label class="custom-color" title="Scegli un altro colore"><span>ï¼‹</span><input id="shapeColor" type="color" value="${palette[0]}" aria-label="Scegli un altro colore"></label>
+          <label class="custom-color" title="Scegli un altro colore"><span>＋</span><input id="shapeColor" type="color" value="${palette[0]}" aria-label="Scegli un altro colore"></label>
         </div>
       </section>
       <section class="shape-tool-section">
@@ -199,10 +199,10 @@ function renderTangram(){
         <h3>Figura selezionata</h3>
         <p id="selectedShapeLabel">Tocca una figura sulla lavagna.</p>
         <div class="shape-actions">
-          <button type="button" id="rotateShape" disabled aria-label="Ruota la figura">â†» <span>Ruota</span></button>
-          <button type="button" id="shrinkShape" disabled aria-label="Rimpicciolisci la figura">âˆ’ <span>Riduci</span></button>
-          <button type="button" id="growShape" disabled aria-label="Ingrandisci la figura">ï¼‹ <span>Ingrandisci</span></button>
-          <button type="button" id="deleteShape" class="delete-shape" disabled aria-label="Elimina la figura">ðŸ—‘ï¸ <span>Elimina</span></button>
+          <button type="button" id="rotateShape" disabled aria-label="Ruota la figura">↻ <span>Ruota</span></button>
+          <button type="button" id="shrinkShape" disabled aria-label="Rimpicciolisci la figura">− <span>Riduci</span></button>
+          <button type="button" id="growShape" disabled aria-label="Ingrandisci la figura">＋ <span>Ingrandisci</span></button>
+          <button type="button" id="deleteShape" class="delete-shape" disabled aria-label="Elimina la figura">🗑️ <span>Elimina</span></button>
         </div>
       </section>
     </aside>
@@ -210,7 +210,7 @@ function renderTangram(){
   <div class="shape-lab-footer">
     <p class="shape-status" id="shapeStatus" aria-live="polite">4 forme sulla lavagna. Toccane una per selezionarla.</p>
     <div class="action-row">
-      <button id="clearShapes" class="secondary-btn">ðŸ§½ Svuota la lavagna</button>
+      <button id="clearShapes" class="secondary-btn">🧽 Svuota la lavagna</button>
       <button id="tangramDone" class="primary-btn">Ho finito la mia figura!</button>
     </div>
   </div>
