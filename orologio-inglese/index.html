@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5146d8">
+  <meta name="description" content="Webapp didattica per imparare a leggere e dire l'ora in inglese, con orologio interattivo, quiz e bingo.">
+  <title>Clock Quest — Impara l'ora in inglese</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Vai al contenuto</a>
+
+  <header class="site-header">
+    <a class="brand" href="#home" data-route="home" aria-label="Clock Quest, torna alla home">
+      <span class="brand-clock" aria-hidden="true"><i></i></span>
+      <span><strong>Clock</strong> Quest</span>
+    </a>
+
+    <button class="menu-toggle" id="menuToggle" type="button" aria-controls="mainNav" aria-expanded="false">
+      <span aria-hidden="true">☰</span><span class="sr-only">Apri il menu</span>
+    </button>
+
+    <nav class="main-nav" id="mainNav" aria-label="Navigazione principale">
+      <button class="nav-link active" type="button" data-route="home">Home</button>
+      <button class="nav-link" type="button" data-route="learn">Imparo</button>
+      <button class="nav-link" type="button" data-level="1">Livello 1</button>
+      <button class="nav-link" type="button" data-level="2">Livello 2</button>
+      <button class="nav-link" type="button" data-level="3">Livello 3</button>
+      <button class="nav-link" type="button" data-route="bingo">Bingo</button>
+    </nav>
+
+    <div class="stars-pill" title="Stelle totali guadagnate">
+      <span aria-hidden="true">⭐</span><strong id="totalStars">0</strong><span class="stars-word"> stelle</span>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <section class="page active" id="homePage" data-page="home" tabindex="-1">
+      <div class="hero shell">
+        <div class="hero-copy">
+          <span class="eyebrow">ENGLISH TIME ADVENTURE</span>
+          <h1>What time<br><em>is it?</em></h1>
+          <p>Impara a leggere l'orologio e a dire l'ora in inglese con attività interattive, tre livelli e un divertente bingo.</p>
+          <div class="hero-actions">
+            <button class="button button-primary" type="button" data-route="learn">Inizia a imparare <span aria-hidden="true">→</span></button>
+            <button class="button button-ghost" type="button" data-level="1">Fai un quiz</button>
+          </div>
+          <ul class="hero-points" aria-label="Caratteristiche">
+            <li>🔊 Pronuncia inglese</li>
+            <li>📱 PC, tablet e mobile</li>
+            <li>⭐ Progressi salvati</li>
+          </ul>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-clock">
+            <span class="hero-number n12">12</span><span class="hero-number n3">3</span>
+            <span class="hero-number n6">6</span><span class="hero-number n9">9</span>
+            <span class="hero-hand hero-hour"></span><span class="hero-hand hero-minute"></span><span class="hero-pin"></span>
+          </div>
+          <span class="speech-bubble bubble-one">It's three o'clock!</span>
+          <span class="speech-bubble bubble-two">Great job! ⭐</span>
+        </div>
+      </div>
+
+      <div class="shell home-content">
+        <div class="section-heading centered">
+          <span class="eyebrow ink">SCEGLI LA TUA AVVENTURA</span>
+          <h2>Un percorso, passo dopo passo</h2>
+          <p>Comincia dallo studio, poi sblocca orari sempre più difficili.</p>
+        </div>
+
+        <div class="adventure-grid">
+          <button class="adventure-card learn-card" type="button" data-route="learn">
+            <span class="card-icon" aria-hidden="true">📖</span>
+            <span class="card-kicker">PRIMA TAPPA</span>
+            <strong>Imparo l'ora</strong>
+            <small>Muovi le lancette, scopri le regole e ascolta la pronuncia.</small>
+            <span class="card-link">ESPLORA <b aria-hidden="true">→</b></span>
+          </button>
+          <button class="adventure-card level-one" type="button" data-level="1">
+            <span class="card-icon" aria-hidden="true">🌟</span>
+            <span class="card-kicker">LIVELLO 1</span>
+            <strong>O'clock &amp; Half past</strong>
+            <small>Ore esatte e mezze ore: la base perfetta per iniziare.</small>
+            <span class="card-link">GIOCA <b aria-hidden="true">→</b></span>
+          </button>
+          <button class="adventure-card level-two" type="button" data-level="2">
+            <span class="card-icon" aria-hidden="true">⭐</span>
+            <span class="card-kicker">LIVELLO 2</span>
+            <strong>Quarter past &amp; to</strong>
+            <small>Scopri i quarti e ricorda di usare l'ora successiva con “to”.</small>
+            <span class="card-link">GIOCA <b aria-hidden="true">→</b></span>
+          </button>
+          <button class="adventure-card level-three" type="button" data-level="3">
+            <span class="card-icon" aria-hidden="true">🚀</span>
+            <span class="card-kicker">LIVELLO 3</span>
+            <strong>Past &amp; To</strong>
+            <small>Tutti gli orari ogni cinque minuti: sei pronta per la sfida?</small>
+            <span class="card-link">GIOCA <b aria-hidden="true">→</b></span>
+          </button>
+          <button class="adventure-card bingo-card" type="button" data-route="bingo">
+            <span class="card-icon" aria-hidden="true">🎉</span>
+            <span class="card-kicker">GIOCO DI GRUPPO</span>
+            <strong>Time Bingo</strong>
+            <small>Ascolta l'orario, trova la casella e completa una fila.</small>
+            <span class="card-link">BINGO! <b aria-hidden="true">→</b></span>
+          </button>
+        </div>
+
+        <aside class="teacher-note">
+          <span aria-hidden="true">💡</span>
+          <div><strong>Un consiglio per chi accompagna il bambino</strong><p>Usate prima la pagina “Imparo”, ripetete le frasi ad alta voce e passate al livello successivo quando le risposte arrivano con sicurezza.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="page" id="learnPage" data-page="learn" tabindex="-1" hidden>
+      <div class="page-banner learn-banner">
+        <div class="shell">
+          <span class="eyebrow">STUDIO INTERATTIVO</span>
+          <h1>Imparo a dire l'ora</h1>
+          <p>Tocca i numeri o trascina le lancette. Poi ascolta e ripeti la frase.</p>
+        </div>
+      </div>
+
+      <div class="shell learn-layout">
+        <section class="clock-workbench" aria-labelledby="workbenchTitle">
+          <div class="workbench-top">
+            <div><span class="mini-kicker">OROLOGIO INTERATTIVO</span><h2 id="workbenchTitle">Costruisci un orario</h2></div>
+            <div class="hand-switch" role="group" aria-label="Scegli la lancetta da muovere">
+              <button type="button" id="selectHour" class="active" aria-pressed="true"><span class="red-dot"></span> Ore</button>
+              <button type="button" id="selectMinute" aria-pressed="false"><span class="dark-dot"></span> Minuti</button>
+            </div>
+          </div>
+
+          <div class="study-zone">
+            <div class="clock-large" id="studyClock" aria-label="Orologio interattivo" role="img"></div>
+            <div class="study-info">
+              <div class="digital-time" id="digitalTime">03:00</div>
+              <p class="english-time" id="englishTime">It's three o'clock</p>
+              <p class="italian-time" id="italianTime">Sono le tre</p>
+              <div class="time-actions">
+                <button class="icon-button speak-button" id="speakTime" type="button"><span aria-hidden="true">🔊</span> Ascolta</button>
+                <button class="icon-button" id="toggleTranslation" type="button" aria-pressed="true"><span aria-hidden="true">🇮🇹</span> Traduzione</button>
+              </div>
+              <div class="step-controls" aria-label="Regola la lancetta selezionata">
+                <button type="button" id="timeMinus" aria-label="Sposta indietro">−</button>
+                <span id="activeHandLabel">Sposto le ore</span>
+                <button type="button" id="timePlus" aria-label="Sposta avanti">+</button>
+              </div>
+              <p class="small-help">Suggerimento: trascina direttamente una lancetta oppure scegli “Ore” o “Minuti” e tocca un numero.</p>
+            </div>
+          </div>
+
+          <div class="try-times">
+            <span>Prova questi orari:</span>
+            <div id="exampleTimes" class="time-chip-row"></div>
+          </div>
+        </section>
+
+        <section class="rules-section" aria-labelledby="rulesTitle">
+          <div class="section-heading">
+            <div><span class="eyebrow ink">LE 5 REGOLE D'ORO</span><h2 id="rulesTitle">Dall'orologio alla frase</h2></div>
+            <p>Ogni scheda contiene una formula e un esempio da ascoltare.</p>
+          </div>
+          <div class="rule-grid" id="ruleGrid"></div>
+        </section>
+
+        <div class="next-step-panel">
+          <div><span aria-hidden="true">🌟</span><strong>Hai esplorato tutte le regole?</strong><p>Metti alla prova ciò che hai imparato con le ore esatte e le mezze ore.</p></div>
+          <button class="button button-primary" type="button" data-level="1">Vai al Livello 1 →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="quizPage" data-page="quiz" tabindex="-1" hidden>
+      <div class="page-banner quiz-banner">
+        <div class="shell quiz-banner-inner">
+          <div>
+            <span class="eyebrow" id="quizKicker">LIVELLO 1</span>
+            <h1 id="quizTitle">O'clock &amp; Half past</h1>
+            <p id="quizDescription">Ore esatte e mezze ore.</p>
+          </div>
+          <div class="best-score"><span>🏆 Miglior risultato</span><strong id="bestScore">—</strong></div>
+        </div>
+      </div>
+
+      <div class="shell quiz-shell">
+        <div class="quiz-toolbar">
+          <div class="mode-picker" role="group" aria-label="Modalità del quiz">
+            <button type="button" data-quiz-mode="clock" class="active">🕒 Orologio → frase</button>
+            <button type="button" data-quiz-mode="phrase">💬 Frase → orologio</button>
+            <button type="button" data-quiz-mode="mixed">🔀 Misto</button>
+          </div>
+          <div class="quiz-score"><span>Risposte corrette</span><strong><span id="quizScore">0</span>/<span id="quizAnswered">0</span></strong></div>
+        </div>
+
+        <div class="progress-track" aria-label="Avanzamento del quiz"><span id="quizProgress"></span></div>
+
+        <section class="quiz-card" id="quizCard" aria-live="polite">
+          <div class="question-count" id="questionCount">DOMANDA 1 DI 10</div>
+          <h2 id="questionPrompt">Che ora indica l'orologio?</h2>
+          <div id="questionVisual" class="question-visual"></div>
+          <div id="answerOptions" class="answer-grid"></div>
+          <div id="quizFeedback" class="quiz-feedback" role="status"></div>
+          <button class="button button-primary next-question" id="nextQuestion" type="button" hidden>Prossima domanda →</button>
+        </section>
+
+        <section class="results-card" id="resultsCard" hidden aria-live="polite">
+          <div class="result-medal" id="resultMedal">🏆</div>
+          <span class="eyebrow ink">MISSIONE COMPLETATA</span>
+          <h2 id="resultTitle">Bravissima!</h2>
+          <p id="resultText"></p>
+          <div class="result-score"><strong id="finalScore">0/10</strong><span>risposte corrette</span></div>
+          <div class="result-actions">
+            <button class="button button-primary" id="replayQuiz" type="button">Gioca ancora</button>
+            <button class="button button-ghost dark" id="nextLevel" type="button">Livello successivo →</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="page" id="bingoPage" data-page="bingo" tabindex="-1" hidden>
+      <div class="page-banner bingo-banner">
+        <div class="shell">
+          <span class="eyebrow">ASCOLTA, TROVA, VINCI</span>
+          <h1>Time Bingo!</h1>
+          <p>Ascolta l'orario in inglese, trova la casella giusta e completa una fila di tre.</p>
+        </div>
+      </div>
+
+      <div class="shell bingo-layout">
+        <section class="caller-panel">
+          <span class="mini-kicker">L'ORARIO CHIAMATO</span>
+          <div class="caller-clock" id="callerClock"></div>
+          <p id="calledPhrase" class="called-phrase">Premi il pulsante per cominciare!</p>
+          <p id="calledTranslation" class="called-translation"></p>
+          <button class="button button-primary call-button" id="callTime" type="button"><span aria-hidden="true">📢</span> Chiama un orario</button>
+          <button class="text-button" id="repeatCall" type="button" disabled>🔊 Ripeti l'ultimo orario</button>
+          <div class="bingo-level">
+            <label for="bingoDifficulty">Difficoltà della scheda</label>
+            <select id="bingoDifficulty">
+              <option value="1">Livello 1 · Ore e mezze</option>
+              <option value="2">Livello 2 · Anche i quarti</option>
+              <option value="3" selected>Livello 3 · Ogni 5 minuti</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="bingo-card-panel" aria-labelledby="bingoCardTitle">
+          <div class="bingo-card-head">
+            <div><span class="mini-kicker">LA TUA SCHEDA</span><h2 id="bingoCardTitle">Trova tre caselle in fila</h2></div>
+            <div class="bingo-tools">
+              <button type="button" id="newBingo">↻ Nuova</button>
+              <button type="button" id="printBingo">🖨 Stampa</button>
+            </div>
+          </div>
+          <div class="bingo-grid" id="bingoGrid"></div>
+          <p class="bingo-help">Puoi segnare una casella solo dopo che il suo orario è stato chiamato.</p>
+          <div id="bingoMessage" class="bingo-message" role="status"></div>
+        </section>
+
+        <aside class="called-history">
+          <span class="mini-kicker">CRONOLOGIA</span>
+          <h2>Orari già chiamati</h2>
+          <div id="calledHistory" class="history-list"><p class="empty-history">Nessun orario chiamato.</p></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell"><span>Clock Quest</span><p>Imparare giocando, un minuto alla volta.</p><button type="button" id="resetProgress">Azzera progressi</button></div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
